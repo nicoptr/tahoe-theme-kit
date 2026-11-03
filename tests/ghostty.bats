@@ -17,7 +17,7 @@ setup_ghostty() {
   grep -qx "sudo snap install ghostty --classic" "$CALLS"
   : >"$CALLS"
   run step_ghostty
-  ! grep -q "^sudo snap install" "$CALLS"
+  refute grep -q "^sudo snap install" "$CALLS"
 }
 
 @test "ghostty: config, css with absolute import, generated themes" {
@@ -26,7 +26,7 @@ setup_ghostty() {
   [ "$status" -eq 0 ]
   [ -f "$HOME/.config/ghostty/config" ]
   grep -q "file://$HOME/.config/gtk-4.0/gtk.css" "$HOME/.config/ghostty/tahoe.css"
-  ! grep -q '@HOME@' "$HOME/.config/ghostty/tahoe.css"
+  refute grep -q '@HOME@' "$HOME/.config/ghostty/tahoe.css"
   grep -qx 'background = #96e4de' "$HOME/.config/ghostty/themes/tahoe-light"
   grep -qx "ghostty +validate-config" "$CALLS"
 }
@@ -89,4 +89,15 @@ setup_ghostty() {
   run step_ghostty
   grep -qx 'Exec=/snap/bin/ghostty' "$HOME/.local/share/applications/ghostty_ghostty.desktop"
   grep -qx 'gtk-single-instance = false' "$HOME/.config/ghostty/config"
+}
+
+@test "ghostty: a symlinked claude settings file stays a symlink" {
+  setup_ghostty
+  mkdir -p "$HOME/dotfiles" "$HOME/.claude"
+  echo '{"model": "x"}' >"$HOME/dotfiles/settings.json" && chmod 644 "$HOME/dotfiles/settings.json"
+  ln -s "$HOME/dotfiles/settings.json" "$HOME/.claude/settings.json"
+  run step_ghostty
+  [ -L "$HOME/.claude/settings.json" ]
+  [ "$(jq -r .theme "$HOME/dotfiles/settings.json")" = auto ]
+  [ "$(stat -c %a "$HOME/dotfiles/settings.json")" = 644 ]
 }

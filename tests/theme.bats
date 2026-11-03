@@ -31,7 +31,7 @@ done'
   css=$HOME/.themes/MacTahoe-Light-purple/gnome-shell/gnome-shell.css
   grep -q 'tahoe-light-shell overrides' "$css"
   grep -q '#7a3f84' "$css"
-  ! grep -q '@ACCENT_HEX@' "$css"
+  refute grep -q '@ACCENT_HEX@' "$css"
   grep -q 'tahoe-dark-shell overrides' "$HOME/.themes/MacTahoe-Dark-purple/gnome-shell/gnome-shell.css"
 }
 
@@ -40,7 +40,7 @@ done'
   run step_theme
   grep -q 'rgba(0, 0, 0, 0.15)' "$HOME/.config/gtk-4.0/gtk-Dark.css"
   grep -q 'rgba(0, 0, 0, 0.15)' "$HOME/.themes/MacTahoe-Light-purple/gtk-4.0/gtk.css"
-  ! grep -q 'RGB(' "$HOME/.config/gtk-4.0/gtk-Light.css"
+  refute grep -q 'RGB(' "$HOME/.config/gtk-4.0/gtk-Light.css"
 }
 
 @test "theme: two runs leave one overrides block" {

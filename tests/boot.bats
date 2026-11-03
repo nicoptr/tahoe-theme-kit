@@ -34,7 +34,7 @@ setup_boot() {
   setup_boot
   run step_gdm <<<"n"
   run step_plymouth <<<"n"
-  ! grep -q '^sudo' "$CALLS"
+  refute grep -q '^sudo' "$CALLS"
 }
 
 @test "nvidia: no NVIDIA GPU → no question" {

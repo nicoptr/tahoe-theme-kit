@@ -4,14 +4,14 @@ load helpers
   run "$REPO_DIR/install.sh"
   [ "$status" -eq 2 ]
   [[ "$output" == *Usage* ]]
-  ! grep -q '^sudo' "$CALLS"
+  refute grep -q '^sudo' "$CALLS"
 }
 
 @test "unknown variant: usage, exit 2, no sudo" {
   run "$REPO_DIR/install.sh" rubyy
   [ "$status" -eq 2 ]
   [[ "$output" == *Usage* ]]
-  ! grep -q '^sudo' "$CALLS"
+  refute grep -q '^sudo' "$CALLS"
 }
 
 @test "not Ubuntu 24.04: exit 1" {

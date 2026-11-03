@@ -12,7 +12,8 @@ install_file() {
   if [[ -f $dest && ! -e $dest.bak-tahoe ]] && ! cmp -s "$tmp" "$dest"; then
     cp "$dest" "$dest.bak-tahoe"
   fi
-  mv "$tmp" "$dest"
+  cat "$tmp" >"$dest"
+  rm -f "$tmp"
 }
 
 step_settings() {

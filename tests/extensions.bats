@@ -35,8 +35,8 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
 @test "extensions: no wobbly windows → no compiz download, no patch" {
   setup_ext
   run step_extensions <<<"n"
-  ! grep -q compiz-windows-effect "$CALLS"
-  ! grep -q '^patch' "$CALLS"
+  refute grep -q compiz-windows-effect "$CALLS"
+  refute grep -q '^patch' "$CALLS"
 }
 
 @test "extensions: wobbly windows → patched after install" {
@@ -48,7 +48,7 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
 @test "extensions: never effect extensions the user rejected" {
   setup_ext
   run step_extensions <<<"y"
-  ! grep -qiE 'magic-lamp|burn-my-windows' "$CALLS"
+  refute grep -qiE 'magic-lamp|burn-my-windows' "$CALLS"
 }
 
 @test "extensions: download failure names the extension" {
@@ -72,5 +72,5 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   STUB_RC_SHA256SUM=1 run strict step_extensions <<<"y"
   [ "$status" -ne 0 ]
   [[ "$output" == *"user-theme@gnome-shell-extensions.gcampax.github.com"* ]]
-  ! grep -q '^gnome-extensions install' "$CALLS"
+  refute grep -q '^gnome-extensions install' "$CALLS"
 }

@@ -33,7 +33,7 @@ step_plymouth() {
 }
 
 step_nvidia() {
-  lspci | grep -qi nvidia || return 0
+  grep -qi nvidia <<<"$(lspci)" || return 0
   if ! nvidia-smi >/dev/null 2>&1; then
     warn "NVIDIA GPU found but nvidia-smi fails: the desktop is probably running on software rendering."
     warn "Fix the driver first (Additional Drivers, or the precompiled linux-modules-nvidia-<ver>-open-generic)."

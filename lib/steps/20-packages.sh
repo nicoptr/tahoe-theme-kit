@@ -1,4 +1,4 @@
-PACKAGES=(git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl python3-nautilus)
+PACKAGES=(git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl python3-nautilus patch)
 
 step_packages() {
   sudo apt-get update
@@ -8,7 +8,7 @@ step_packages() {
 clone_pinned() {
   local dir=$CACHE/$1 commit=$2
   [[ -d $dir/.git ]] || git clone "https://github.com/vinceliuice/$1.git" "$dir"
-  git -C "$dir" fetch --quiet origin
+  git -C "$dir" cat-file -e "$commit^{commit}" 2>/dev/null || git -C "$dir" fetch --quiet origin
   git -C "$dir" checkout --quiet --detach "$commit"
 }
 

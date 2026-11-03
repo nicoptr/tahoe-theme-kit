@@ -21,7 +21,7 @@ setup_runtime() {
   run "$RT/tahoe-mode.sh" light
   [ "$status" -eq 0 ]
   grep -q "user-theme name MacTahoe-Light-purple" "$CALLS"
-  ! grep -q -- --schemadir "$CALLS"
+  refute grep -q -- --schemadir "$CALLS"
 }
 
 @test "user-theme schemas dir present: --schemadir passed" {

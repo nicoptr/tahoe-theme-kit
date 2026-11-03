@@ -52,6 +52,7 @@ ask_image() {
       read -r path || interactive=false
     fi
     path=${path:-$default}
+    [[ $path =~ ^\'(.*)\'$ || $path =~ ^\"(.*)\"$ ]] && path=${BASH_REMATCH[1]}
     path=${path/#\~/$HOME}
     if identify "$path" >/dev/null 2>&1; then
       realpath "$path"

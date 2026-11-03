@@ -39,5 +39,6 @@ step_ghostty() {
   local claude=$HOME/.claude/settings.json tmp
   [[ -f $claude ]] || return 0
   tmp=$(mktemp)
-  jq '.theme = "auto"' "$claude" >"$tmp" && mv "$tmp" "$claude"
+  jq '.theme = "auto"' "$claude" >"$tmp" && cat "$tmp" >"$claude"
+  rm -f "$tmp"
 }

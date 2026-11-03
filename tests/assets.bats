@@ -81,3 +81,12 @@ setup_assets() {
   [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-mine-light.png" ]
   [ -f "$BG_LIGHT" ]
 }
+
+@test "assets: a path dragged into the terminal, with quotes, is accepted" {
+  setup_assets
+  image "$HOME/My Pics/a b.png"
+  run step_assets <<<"'$HOME/My Pics/a b.png'"$'\n\n\n'
+  [ "$status" -eq 0 ]
+  source "$RUNTIME/tahoe.conf"
+  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-a-b.png" ]
+}

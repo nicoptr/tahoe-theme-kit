@@ -50,12 +50,23 @@ setup_settings() {
   load_lib
   STUB_OUT_DPKG_QUERY='install ok installed' run step_switchcraft
   [ "$status" -eq 0 ]
-  ! grep -q '^curl' "$CALLS"
+  refute grep -q '^curl' "$CALLS"
 }
 
 @test "switchcraft: checksum mismatch → not installed" {
   load_lib
   STUB_RC_SHA256SUM=1 run strict step_switchcraft
   [ "$status" -ne 0 ]
-  ! grep -q '^sudo apt-get install' "$CALLS"
+  refute grep -q '^sudo apt-get install' "$CALLS"
+}
+
+@test "settings: a symlinked config file stays a symlink and keeps its mode" {
+  setup_settings
+  mkdir -p "$HOME/dotfiles" "$HOME/.config/gtk-3.0"
+  echo mine >"$HOME/dotfiles/gtk.css" && chmod 644 "$HOME/dotfiles/gtk.css"
+  ln -s "$HOME/dotfiles/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
+  run step_settings
+  [ -L "$HOME/.config/gtk-3.0/gtk.css" ]
+  grep -q scrollbar "$HOME/dotfiles/gtk.css"
+  [ "$(stat -c %a "$HOME/dotfiles/gtk.css")" = 644 ]
 }

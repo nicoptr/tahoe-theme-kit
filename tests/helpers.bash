@@ -31,3 +31,6 @@ fake_curl_writes() {
     printf '%s' "$FAKE_CURL_CONTENT" >"$out"
   }
 }
+
+# `! cmd` does not fail a bats test unless it is the last line
+refute() { if "$@"; then return 1; fi; }

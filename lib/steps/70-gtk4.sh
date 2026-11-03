@@ -3,7 +3,7 @@ GTK4_PACKAGES=(libgtk-4-1 libgtk-4-bin libgtk-4-common gir1.2-gtk-4.0 libgtk-4-m
 GTK4_RELEASE_URL=${GTK4_RELEASE_URL:-https://github.com/nicoptr/tahoe-theme-kit/releases/download/gtk4-livecss-4.14.5-0ubuntu0.10}
 GTK4_TAR_SHA256=f7bc8e787ef0878856717676c121eda3cf3c297b8fe525d964b37ea0a31cdc25
 GTK4_BUILD_SCRIPT=${GTK4_BUILD_SCRIPT:-$REPO_DIR/gtk4-live-css/build.sh}
-APT_SOURCES=/etc/apt/sources.list.d/ubuntu.sources
+APT_SOURCES=${APT_SOURCES:-/etc/apt/sources.list.d/ubuntu.sources}
 
 gtk4_hold_warning() {
   log "Patched GTK4 lets open apps (Nautilus too) switch light/dark live."
@@ -12,15 +12,24 @@ gtk4_hold_warning() {
 
 install_gtk4_prebuilt() {
   local dir=$CACHE/gtk4-debs
+  rm -rf "$dir"
   mkdir -p "$dir"
   download "$GTK4_RELEASE_URL/gtk4-livecss-debs.tar" "$CACHE/downloads/gtk4-livecss-debs.tar" "$GTK4_TAR_SHA256" || return 1
   tar -xf "$CACHE/downloads/gtk4-livecss-debs.tar" -C "$dir"
   sudo apt-get install -y "$dir"/*.deb
 }
 
+restore_apt_sources() {
+  sudo cp "$CACHE/ubuntu.sources.orig" "$APT_SOURCES"
+  sudo apt-get update
+}
+
 build_gtk4() {
   local build=$CACHE/gtk4-build manual_before pkg debs=()
   manual_before=$(apt-mark showmanual)
+  mkdir -p "$CACHE"
+  cp "$APT_SOURCES" "$CACHE/ubuntu.sources.orig"
+  trap restore_apt_sources EXIT
   sudo sed -i 's/^Types: deb$/Types: deb deb-src/' "$APT_SOURCES"
   sudo apt-get update
   sudo apt-get build-dep -y gtk4
@@ -31,8 +40,8 @@ build_gtk4() {
 
   comm -13 <(sort <<<"$manual_before") <(apt-mark showmanual | sort) | xargs -r sudo apt-mark auto
   sudo apt-get autoremove -y
-  sudo sed -i 's/^Types: deb deb-src$/Types: deb/' "$APT_SOURCES"
-  sudo apt-get update
+  trap - EXIT
+  restore_apt_sources
   rm -rf "${build:?}"
 }
 
