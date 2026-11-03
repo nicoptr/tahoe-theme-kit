@@ -89,6 +89,19 @@ setup_assets() {
   [ -f "$BG_LIGHT" ]
 }
 
+@test "assets: a rerun replaces last time's default wallpapers with this variant's" {
+  setup_assets
+  mkdir -p "$RUNTIME/backgrounds"
+  image "$RUNTIME/backgrounds/light-MacTahoe-day.jpeg"
+  image "$RUNTIME/backgrounds/dark-ruby-night.jpeg"
+  printf 'BG_LIGHT=%q\nBG_DARK=%q\n' "$RUNTIME/backgrounds/light-MacTahoe-day.jpeg" "$RUNTIME/backgrounds/dark-ruby-night.jpeg" >"$RUNTIME/tahoe.conf"
+  run step_assets <<<$'\n\n\n'
+  [ "$status" -eq 0 ]
+  source "$RUNTIME/tahoe.conf"
+  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-amethyst-day.jpeg" ]
+  [ "$BG_DARK" = "$RUNTIME/backgrounds/dark-amethyst-night.jpeg" ]
+}
+
 @test "assets: a path dragged into the terminal, with quotes, is accepted" {
   setup_assets
   image "$HOME/My Pics/a b.png"

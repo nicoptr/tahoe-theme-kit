@@ -16,7 +16,12 @@ copy_asset() {
 previous_or() {
   local value
   value=$([[ -f $RUNTIME/tahoe.conf ]] && source "$RUNTIME/tahoe.conf" && echo "${!1:-}")
-  if [[ -f $value ]]; then echo "$value"; else echo "$2"; fi
+  # a kit default from last time (MacTahoe's or a variant's wallpaper) gives way to this variant's
+  if [[ -f $value && ! $(basename "$value") =~ ^(light|dark)-[A-Za-z]+-(day|night)\.jpeg$ ]]; then
+    echo "$value"
+  else
+    echo "$2"
+  fi
 }
 
 tint_wallpaper() {
