@@ -13,6 +13,7 @@ Built on [MacTahoe](https://github.com/vinceliuice/MacTahoe-gtk-theme) by vincel
 |---|---|
 | `amethyst` | purple |
 | `ruby` | red |
+| `topaz` | yellow |
 
 To make your own, see [CUSTOMIZING.md](CUSTOMIZING.md).
 
