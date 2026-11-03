@@ -1,6 +1,6 @@
 GTK4_BASE=4.14.5+ds-0ubuntu0.10
 GTK4_PACKAGES=(libgtk-4-1 libgtk-4-bin libgtk-4-common gir1.2-gtk-4.0 libgtk-4-media-gstreamer)
-GTK4_RELEASE_URL=${GTK4_RELEASE_URL:-https://github.com/OWNER/tahoe-theme-kit/releases/download/gtk4-livecss-4.14.5-0ubuntu0.10}
+GTK4_RELEASE_URL=${GTK4_RELEASE_URL:-https://github.com/nicoptr/tahoe-theme-kit/releases/download/gtk4-livecss-4.14.5-0ubuntu0.10}
 GTK4_TAR_SHA256=f7bc8e787ef0878856717676c121eda3cf3c297b8fe525d964b37ea0a31cdc25
 GTK4_BUILD_SCRIPT=${GTK4_BUILD_SCRIPT:-$REPO_DIR/gtk4-live-css/build.sh}
 APT_SOURCES=/etc/apt/sources.list.d/ubuntu.sources

@@ -22,7 +22,7 @@ To make your own, see [CUSTOMIZING.md](CUSTOMIZING.md).
 Requirements: **Ubuntu 24.04 LTS** (GNOME 46). An **X11** session is recommended: pick "Ubuntu on Xorg" on the login screen. Wayland works, but it gets less testing.
 
 ```sh
-git clone https://github.com/OWNER/tahoe-theme-kit.git
+git clone https://github.com/nicoptr/tahoe-theme-kit.git
 cd tahoe-theme-kit
 ./install.sh amethyst
 ```
