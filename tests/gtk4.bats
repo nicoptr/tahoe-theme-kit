@@ -1,0 +1,56 @@
+load helpers
+
+GTK4_PACKAGES_RE='libgtk-4-1 libgtk-4-bin libgtk-4-common gir1.2-gtk-4.0 libgtk-4-media-gstreamer'
+
+@test "gtk4: already patched → nothing to do" {
+  load_lib
+  STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10+livecss1 run step_gtk4
+  [ "$status" -eq 0 ]
+  ! grep -q '^sudo' "$CALLS"
+  ! grep -q '^curl' "$CALLS"
+}
+
+@test "gtk4: base version → prebuilt debs installed and held" {
+  load_lib
+  STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10 run step_gtk4 <<<"y"
+  [ "$status" -eq 0 ]
+  grep -q "^curl .*/releases/download/gtk4-livecss-4.14.5-0ubuntu0.10/gtk4-livecss-debs.tar" "$CALLS"
+  grep -q "^sudo apt-get install -y $CACHE/gtk4-debs/" "$CALLS"
+  grep -qx "sudo apt-mark hold $GTK4_PACKAGES_RE" "$CALLS"
+  [[ "$output" == *"security updates"* ]]
+}
+
+@test "gtk4: older version also gets the prebuilt debs" {
+  load_lib
+  STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.8 run step_gtk4 <<<"y"
+  grep -q "^curl .*gtk4-livecss-debs.tar" "$CALLS"
+}
+
+@test "gtk4: newer version and no to the build → no apt call" {
+  load_lib
+  STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.11 run step_gtk4 <<<"n"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Build patched GTK4"* ]]
+  ! grep -q '^sudo' "$CALLS"
+  ! grep -q '^curl' "$CALLS"
+}
+
+@test "gtk4: newer version and yes → build, install, hold, clean up" {
+  load_lib
+  fake=$BATS_TEST_TMPDIR/build.sh
+  printf '#!/usr/bin/env bash\necho "build.sh BUILD_DIR=$BUILD_DIR" >>"$CALLS"\n' >"$fake" && chmod +x "$fake"
+  GTK4_BUILD_SCRIPT=$fake
+  STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.11 run step_gtk4 <<<$'y\ny'
+  [ "$status" -eq 0 ]
+  grep -q "^sudo apt-get build-dep -y gtk4" "$CALLS"
+  grep -q "^build.sh BUILD_DIR=$CACHE/gtk4-build" "$CALLS"
+  grep -qx "sudo apt-mark hold $GTK4_PACKAGES_RE" "$CALLS"
+  [ "$(grep -c 'deb-src' "$CALLS")" -ge 2 ]
+}
+
+@test "gtk4: no to installing the patched GTK4 → nothing installed" {
+  load_lib
+  STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10 run step_gtk4 <<<"n"
+  [ "$status" -eq 0 ]
+  ! grep -q '^sudo' "$CALLS"
+}
