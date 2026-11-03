@@ -51,6 +51,7 @@ Nothing else needs changing: `install.sh` lists `variants/*.conf` in its usage m
 - Write the bats test first. Use `load helpers`, then `load_lib`. Assert on the `$CALLS` log written by the stubs and on files in the temporary `$HOME`.
 - Stub output and exit codes are set with `STUB_OUT_<NAME>` and `STUB_RC_<NAME>` (e.g. `STUB_OUT_DPKG_QUERY`). For a command that isn't stubbed yet: `ln -s _stub tests/stubs/<name>`.
 - Use `run strict step_x` when the behavior depends on `set -e`, as it does in `install.sh`.
+- To assert that something did not happen, use `refute grep ...`, not `! grep ...`: bats ignores a failing `!` line unless it is the last one in the test.
 - Questions go through `ask_yes_no` and `ask_image`, so `TAHOE_YES=1` answers them all with the default.
 
 ## Update MacTahoe
