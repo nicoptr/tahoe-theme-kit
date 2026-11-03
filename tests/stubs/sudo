@@ -1,1 +1,5 @@
-_stub
+#!/usr/bin/env bash
+echo "sudo $*" >>"${CALLS:?}"
+# -n is only the keepalive loop: failing it ends the loop so bats does not wait for it
+[[ ${1:-} == -n ]] && exit 1
+exit "${STUB_RC_SUDO:-0}"

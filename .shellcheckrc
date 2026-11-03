@@ -1,3 +1,3 @@
 shell=bash
 # globals and sourced files are shared across lib/ and steps
-disable=SC1090,SC2034
+disable=SC1090,SC1091,SC2034
