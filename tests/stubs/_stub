@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+name=$(basename "$0")
+echo "$name $*" >>"${CALLS:?}"
+key=${name//-/_}
+key=${key^^}
+out=STUB_OUT_$key rc=STUB_RC_$key
+[[ -n ${!out:-} ]] && printf '%s\n' "${!out}"
+exit "${!rc:-0}"
