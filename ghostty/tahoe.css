@@ -5,6 +5,10 @@ headerbar.flat,
 headerbar:backdrop,
 headerbar.flat:backdrop,
 toolbarview > .top-bar headerbar,
-toolbarview > .top-bar headerbar:backdrop {
+toolbarview > .top-bar headerbar:backdrop,
+tabbar,
+tabbar:backdrop,
+toolbarview > .top-bar tabbar,
+toolbarview > .top-bar tabbar:backdrop {
   background-color: @headerbar_bg_color;
 }

@@ -6,7 +6,7 @@ setup_ghostty() {
   cp "$REPO_DIR/variants/amethyst.conf" "$RUNTIME/tahoe.conf"
   cp "$REPO_DIR/ghostty/gen-themes.py" "$RUNTIME/"
   export SNAP_DESKTOP=$BATS_TEST_TMPDIR/ghostty_ghostty.desktop
-  printf '[Desktop Entry]\nName=Ghostty\nIcon=/snap/ghostty/x/icon.png\n' >"$SNAP_DESKTOP"
+  printf '[Desktop Entry]\nName=Ghostty\nExec=/snap/bin/ghostty --gtk-single-instance=true\nIcon=/snap/ghostty/x/icon.png\n' >"$SNAP_DESKTOP"
   cp /etc/skel/.bashrc "$HOME/.bashrc"
   export STUB_OUT_GSETTINGS="['org.gnome.Terminal.desktop', 'firefox_firefox.desktop']"
 }
@@ -82,4 +82,11 @@ setup_ghostty() {
   [ "$status" -eq 0 ]
   grep -qx "sudo apt-get remove -y nautilus-extension-gnome-terminal" "$CALLS"
   grep -q '"ghostty"' "$HOME/.local/share/nautilus-python/extensions/tahoe-ghostty.py"
+}
+
+@test "ghostty: every launch is its own process" {
+  setup_ghostty
+  run step_ghostty
+  grep -qx 'Exec=/snap/bin/ghostty' "$HOME/.local/share/applications/ghostty_ghostty.desktop"
+  grep -qx 'gtk-single-instance = false' "$HOME/.config/ghostty/config"
 }

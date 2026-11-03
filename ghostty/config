@@ -15,6 +15,7 @@ window-padding-balance = true
 window-padding-color = extend
 
 window-save-state = always
+gtk-single-instance = false
 
 cursor-style = block
 cursor-style-blink = true

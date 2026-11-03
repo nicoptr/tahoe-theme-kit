@@ -2,9 +2,10 @@ SNAP_DESKTOP=${SNAP_DESKTOP:-/var/lib/snapd/desktop/applications/ghostty_ghostty
 
 use_ghostty_as_terminal() {
   local apps=$HOME/.local/share/applications favorites
-  # the snap's icon is a fixed PNG path that bypasses the icon theme
+  # the snap's icon is a fixed PNG path that bypasses the icon theme;
+  # windows opened inside a long-running instance can lose their GTK shadow and get a square one
   mkdir -p "$apps"
-  sed 's|^Icon=.*|Icon=org.gnome.Terminal|' "$SNAP_DESKTOP" >"$apps/ghostty_ghostty.desktop"
+  sed -e 's|^Icon=.*|Icon=org.gnome.Terminal|' -e 's| --gtk-single-instance=true||' "$SNAP_DESKTOP" >"$apps/ghostty_ghostty.desktop"
 
   favorites=$(gsettings get org.gnome.shell favorite-apps)
   favorites=${favorites//\'org.gnome.Terminal.desktop\'/\'ghostty_ghostty.desktop\'}
