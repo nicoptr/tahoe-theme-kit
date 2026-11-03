@@ -38,7 +38,7 @@ When it ends:
 
 | Step | What changes | How to undo |
 |---|---|---|
-| packages | `git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl` | `apt remove` |
+| packages | `git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl python3-nautilus` | `apt remove` |
 | upstream | MacTahoe gtk + icon repos, at pinned commits, in `~/.cache/tahoe-theme-kit` | delete the folder |
 | assets | asks for the light wallpaper, the dark wallpaper and the boot logo, then writes `~/.local/share/tahoe-theme-kit/tahoe.conf` | delete the folder |
 | theme | MacTahoe GTK + shell theme (`-l -HD --shell -p 45 -h smaller --round`) plus the kit's shell fixes | `MacTahoe-gtk-theme/install.sh -r` |
@@ -47,7 +47,7 @@ When it ends:
 | settings | wallpapers, cursor, terminal follows the system, thin terminal scrollbar, Switchcraft commands | GNOME Settings |
 | switchcraft | [Switchcraft](https://github.com/kem-a/switchcraft) 1.2.1, which watches the Dark Style button | `apt remove switchcraft` |
 | gtk4 | patched GTK4 that reloads its CSS live, held with `apt-mark` | see [GTK4](#gtk4) |
-| ghostty | [Ghostty](https://ghostty.org) as the default terminal, with a Tahoe title bar and colors from the variant | `snap remove ghostty` |
+| ghostty | [Ghostty](https://ghostty.org) as the default terminal, with a Tahoe title bar and colors from the variant. Nautilus gets "Open in Ghostty" in place of GNOME Terminal's "Open in Terminal" | `snap remove ghostty`, `apt install nautilus-extension-gnome-terminal` |
 | gdm | login screen in the dark variant, with your dark wallpaper blurred | `sudo ~/.cache/tahoe-theme-kit/MacTahoe-gtk-theme/tweaks.sh -g -r` |
 | plymouth | boot splash with your logo and the accent color on the progress bar | `sudo update-alternatives --set default.plymouth /usr/share/plymouth/themes/bgrt/bgrt.plymouth && sudo update-initramfs -u` |
 | nvidia | warns if the NVIDIA driver isn't in use; optional `GSK_RENDERER=gl` | delete `~/.config/environment.d/60-gsk-renderer.conf` |

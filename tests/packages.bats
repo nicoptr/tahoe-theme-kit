@@ -5,7 +5,7 @@ load helpers
   run step_packages
   [ "$status" -eq 0 ]
   [ "$(grep -c '^sudo apt-get install' "$CALLS")" -eq 1 ]
-  for p in git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl; do
+  for p in git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl python3-nautilus; do
     grep -q "^sudo apt-get install -y .*\b$p\b" "$CALLS"
   done
 }

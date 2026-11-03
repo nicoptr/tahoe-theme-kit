@@ -75,3 +75,11 @@ setup_ghostty() {
   STUB_OUT_GSETTINGS="['firefox_firefox.desktop', 'ghostty_ghostty.desktop']" run step_ghostty
   grep -qx "gsettings set org.gnome.shell favorite-apps \['firefox_firefox.desktop', 'ghostty_ghostty.desktop'\]" "$CALLS"
 }
+
+@test "ghostty: Nautilus opens folders in Ghostty instead of GNOME Terminal" {
+  setup_ghostty
+  run step_ghostty
+  [ "$status" -eq 0 ]
+  grep -qx "sudo apt-get remove -y nautilus-extension-gnome-terminal" "$CALLS"
+  grep -q '"ghostty"' "$HOME/.local/share/nautilus-python/extensions/tahoe-ghostty.py"
+}

@@ -12,6 +12,11 @@ use_ghostty_as_terminal() {
   gsettings set org.gnome.shell favorite-apps "$favorites"
   gsettings set org.gnome.desktop.default-applications.terminal exec ghostty
   gsettings set org.gnome.desktop.default-applications.terminal exec-arg -e
+
+  # GNOME Terminal's Nautilus extension always opens GNOME Terminal
+  sudo apt-get remove -y nautilus-extension-gnome-terminal
+  mkdir -p "$HOME/.local/share/nautilus-python/extensions"
+  cp "$REPO_DIR/ghostty/tahoe-ghostty.py" "$HOME/.local/share/nautilus-python/extensions/"
 }
 
 step_ghostty() {
