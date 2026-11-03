@@ -3,10 +3,10 @@ SWITCHCRAFT_URL=https://github.com/kem-a/switchcraft/releases/download/v1.2.1/$S
 
 file_uri() { python3 -I -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).as_uri())' "$1"; }
 
-install_home_file() {
-  local rel=$1 dest=$HOME/$1 tmp
+install_file() {
+  local src=$1 dest=$2 tmp
   tmp=$(mktemp)
-  render "$REPO_DIR/files/$rel" "$tmp"
+  render "$src" "$tmp"
   mkdir -p "$(dirname "$dest")"
   if [[ -f $dest && ! -e $dest.bak-tahoe ]] && ! cmp -s "$tmp" "$dest"; then
     cp "$dest" "$dest.bak-tahoe"
@@ -22,7 +22,7 @@ step_settings() {
 
   local rel
   while IFS= read -r rel; do
-    install_home_file "$rel"
+    install_file "$REPO_DIR/files/$rel" "$HOME/$rel"
   done < <(cd "$REPO_DIR/files" && find . -type f -printf '%P\n')
   systemctl --user enable systemd-tmpfiles-setup.service
 }

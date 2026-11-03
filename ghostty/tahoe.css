@@ -1,0 +1,10 @@
+@import url("file://@HOME@/.config/gtk-4.0/gtk.css");
+
+headerbar,
+headerbar.flat,
+headerbar:backdrop,
+headerbar.flat:backdrop,
+toolbarview > .top-bar headerbar,
+toolbarview > .top-bar headerbar:backdrop {
+  background-color: @headerbar_bg_color;
+}

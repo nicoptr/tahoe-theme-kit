@@ -1,0 +1,24 @@
+theme = light:tahoe-light,dark:tahoe-dark
+gtk-custom-css = tahoe.css
+
+font-family = Ubuntu Sans Mono
+font-size = 13
+bold-is-bright = false
+minimum-contrast = 1.3
+
+background-opacity = 0.97
+window-width = 80
+window-height = 24
+window-padding-x = 8
+window-padding-y = 6
+window-padding-balance = true
+window-padding-color = extend
+
+window-save-state = always
+
+cursor-style = block
+cursor-style-blink = true
+shell-integration-features = no-cursor,sudo,title
+mouse-hide-while-typing = true
+
+bell-features = attention,title
