@@ -54,3 +54,18 @@ GTK4_PACKAGES_RE='libgtk-4-1 libgtk-4-bin libgtk-4-common gir1.2-gtk-4.0 libgtk-
   [ "$status" -eq 0 ]
   ! grep -q '^sudo' "$CALLS"
 }
+
+@test "gtk4: download failure skips the step without stopping the installer" {
+  load_lib
+  STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10 STUB_RC_CURL=22 run strict step_gtk4 <<<"y"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *Skipped* ]]
+  ! grep -q '^sudo' "$CALLS"
+}
+
+@test "gtk4: checksum mismatch → nothing installed" {
+  load_lib
+  STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10 STUB_RC_SHA256SUM=1 run strict step_gtk4 <<<"y"
+  [ "$status" -eq 0 ]
+  ! grep -q '^sudo' "$CALLS"
+}

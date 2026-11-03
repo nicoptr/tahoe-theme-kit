@@ -62,6 +62,18 @@ ask_image() {
   done
 }
 
+download() {
+  local url=$1 dest=$2 sha256=$3
+  if ! curl --proto '=https' --proto-redir '=https' -fsSL -o "$dest" "$url"; then
+    warn "Download failed: $url"
+    return 1
+  fi
+  sha256sum --check --status <<<"$sha256  $dest" && return 0
+  rm -f "$dest"
+  warn "Checksum mismatch: $url"
+  return 1
+}
+
 render() {
   local text
   text=$(<"$1")

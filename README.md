@@ -12,7 +12,6 @@ Built on [MacTahoe](https://github.com/vinceliuice/MacTahoe-gtk-theme) by vincel
 | Variant | Accent |
 |---|---|
 | `amethyst` | purple |
-| `topaz` | yellow |
 | `ruby` | red |
 
 To make your own, see [CUSTOMIZING.md](CUSTOMIZING.md).

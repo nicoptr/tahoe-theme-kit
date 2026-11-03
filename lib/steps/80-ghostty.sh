@@ -7,7 +7,9 @@ use_ghostty_as_terminal() {
   sed 's|^Icon=.*|Icon=org.gnome.Terminal|' "$SNAP_DESKTOP" >"$apps/ghostty_ghostty.desktop"
 
   favorites=$(gsettings get org.gnome.shell favorite-apps)
-  gsettings set org.gnome.shell favorite-apps "${favorites//\'org.gnome.Terminal.desktop\'/\'ghostty_ghostty.desktop\'}"
+  favorites=${favorites//\'org.gnome.Terminal.desktop\'/\'ghostty_ghostty.desktop\'}
+  [[ $favorites == *\'ghostty_ghostty.desktop\'* ]] || favorites="${favorites%]}, 'ghostty_ghostty.desktop']"
+  gsettings set org.gnome.shell favorite-apps "$favorites"
   gsettings set org.gnome.desktop.default-applications.terminal exec ghostty
   gsettings set org.gnome.desktop.default-applications.terminal exec-arg -e
 }

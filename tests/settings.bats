@@ -52,3 +52,10 @@ setup_settings() {
   [ "$status" -eq 0 ]
   ! grep -q '^curl' "$CALLS"
 }
+
+@test "switchcraft: checksum mismatch → not installed" {
+  load_lib
+  STUB_RC_SHA256SUM=1 run strict step_switchcraft
+  [ "$status" -ne 0 ]
+  ! grep -q '^sudo apt-get install' "$CALLS"
+}

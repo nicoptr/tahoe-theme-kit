@@ -66,3 +66,12 @@ setup_ghostty() {
   run strict step_ghostty
   [ "$status" -eq 0 ]
 }
+
+@test "ghostty: added to the dock once when GNOME Terminal is not there" {
+  setup_ghostty
+  STUB_OUT_GSETTINGS="['firefox_firefox.desktop']" run step_ghostty
+  grep -qx "gsettings set org.gnome.shell favorite-apps \['firefox_firefox.desktop', 'ghostty_ghostty.desktop'\]" "$CALLS"
+  : >"$CALLS"
+  STUB_OUT_GSETTINGS="['firefox_firefox.desktop', 'ghostty_ghostty.desktop']" run step_ghostty
+  grep -qx "gsettings set org.gnome.shell favorite-apps \['firefox_firefox.desktop', 'ghostty_ghostty.desktop'\]" "$CALLS"
+}

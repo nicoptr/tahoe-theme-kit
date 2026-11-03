@@ -1,18 +1,18 @@
-# uuid and extensions.gnome.org version_tag; the tag pins the tested release (version in the README)
+# uuid, extensions.gnome.org version_tag (pins the tested release, versions in the README), sha256 of the zip
 EXTENSIONS=(
-  "user-theme@gnome-shell-extensions.gcampax.github.com 61748"
-  "blur-my-shell@aunetx 77413"
-  "rounded-window-corners@fxgn 65276"
-  "hidetopbar@mathieu.bidon.ca 76242"
-  "CoverflowAltTab@palatis.blogspot.com 61982"
+  "user-theme@gnome-shell-extensions.gcampax.github.com 61748 3a81c880cada5b8e18d30f0ec65a16a44bf88cdca51038a0af5ed48e63cbfa98"
+  "blur-my-shell@aunetx 77413 3218766acf4b0feed700ba518a1db5616f59c7e1036758ffbd18bf4743e9b2db"
+  "rounded-window-corners@fxgn 65276 7e2271cc9717e7f7900825d2d8f85dd77e9085679814d1c8590010cfe2a041a4"
+  "hidetopbar@mathieu.bidon.ca 76242 c4bccf4e9517c429d1de88c0263037b4ab73804f7024f2376c2419e186892200"
+  "CoverflowAltTab@palatis.blogspot.com 61982 0d5a430205a88e807d94a41b7849dd4b027219c9df36892d7cbfb3db948d089e"
 )
-WOBBLY="compiz-windows-effect@hermes83.github.com 67396"
+WOBBLY="compiz-windows-effect@hermes83.github.com 67396 744d0f98858dac57bdcff50c399d63a9aea7b1db1c5765a967081cc7802fad0e"
 EXTENSION_SETTINGS=(blur-my-shell rounded-window-corners-reborn hidetopbar appindicator)
 
 install_extension() {
-  local uuid=$1 tag=$2 zip=$CACHE/downloads/$1.zip
-  curl -fsSL -o "$zip" "https://extensions.gnome.org/download-extension/$uuid.shell-extension.zip?version_tag=$tag" ||
-    die "Download failed: $uuid"
+  local uuid=$1 tag=$2 sha256=$3 zip=$CACHE/downloads/$1.zip
+  download "https://extensions.gnome.org/download-extension/$uuid.shell-extension.zip?version_tag=$tag" "$zip" "$sha256" ||
+    die "Could not get the extension $uuid"
   gnome-extensions install --force "$zip"
 }
 
@@ -26,14 +26,14 @@ print(enabled + [u for u in sys.argv[2:] if u not in enabled])' "$current" "$@")
 }
 
 step_extensions() {
-  local selected=("${EXTENSIONS[@]}") wobbly=false entry uuid tag uuids=() p
+  local selected=("${EXTENSIONS[@]}") wobbly=false entry uuid tag sha256 uuids=() p
   ask_yes_no "Wobbly windows (Compiz windows effect)?" y && wobbly=true
   $wobbly && selected+=("$WOBBLY")
 
   mkdir -p "$CACHE/downloads"
   for entry in "${selected[@]}"; do
-    read -r uuid tag <<<"$entry"
-    install_extension "$uuid" "$tag"
+    read -r uuid tag sha256 <<<"$entry"
+    install_extension "$uuid" "$tag" "$sha256"
     uuids+=("$uuid")
   done
   if $wobbly; then

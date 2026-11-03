@@ -31,7 +31,7 @@ setup_assets() {
   run step_assets <<<$'~/My Pics/a b.png\n\n\n'
   [ "$status" -eq 0 ]
   source "$RUNTIME/tahoe.conf"
-  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-a b.png" ]
+  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-a-b.png" ]
   [ -f "$BG_LIGHT" ]
 }
 
@@ -69,4 +69,15 @@ setup_assets() {
   run strict step_assets </dev/null
   [ "$status" -eq 0 ]
   grep -q '^BG_DARK=.*dark-MacTahoe-night.jpeg$' "$RUNTIME/tahoe.conf"
+}
+
+@test "assets: a rerun offers the images chosen last time" {
+  setup_assets
+  image "$HOME/mine-light.png"
+  run step_assets <<<$'~/mine-light.png\n\n\n'
+  run step_assets <<<$'\n\n\n'
+  [ "$status" -eq 0 ]
+  source "$RUNTIME/tahoe.conf"
+  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-mine-light.png" ]
+  [ -f "$BG_LIGHT" ]
 }

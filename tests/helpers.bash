@@ -20,3 +20,14 @@ calls() { cat "$CALLS"; }
 strict() {
   REPO_DIR=$REPO_DIR bash -euo pipefail -c 'source "$1/lib/common.sh"; for f in "$1"/lib/steps/*.sh; do source "$f"; done; shift; "$@"' _ "$REPO_DIR" "$@"
 }
+
+# a curl that writes $1 to its -o file
+fake_curl_writes() {
+  FAKE_CURL_CONTENT=$1
+  curl() {
+    echo "curl $*" >>"$CALLS"
+    local out
+    while (($#)); do [[ $1 == -o ]] && out=$2; shift; done
+    printf '%s' "$FAKE_CURL_CONTENT" >"$out"
+  }
+}

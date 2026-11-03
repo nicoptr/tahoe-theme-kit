@@ -37,3 +37,17 @@ load helpers
   TAHOE_YES=1 run ask_yes_no "Go?" n <<<"y"
   [ "$status" -eq 1 ]
 }
+
+@test "download: https only, checksum verified with the real sha256sum" {
+  load_lib
+  PATH=${PATH#*/tests/stubs:}
+  fake_curl_writes hello
+  good=2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+  run download https://x/y "$BATS_TEST_TMPDIR/f" "$good"
+  [ "$status" -eq 0 ]
+  grep -q -- "--proto =https --proto-redir =https" "$CALLS"
+  run download https://x/y "$BATS_TEST_TMPDIR/f" 0000
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Checksum mismatch"* ]]
+  [ ! -e "$BATS_TEST_TMPDIR/f" ]
+}

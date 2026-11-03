@@ -1,5 +1,6 @@
 SWITCHCRAFT_DEB=switchcraft_1.2.1_amd64.deb
 SWITCHCRAFT_URL=https://github.com/kem-a/switchcraft/releases/download/v1.2.1/$SWITCHCRAFT_DEB
+SWITCHCRAFT_SHA256=ef58113be813c67f6bc985906522c5d3d7dcfecff776b50713024570b1814c96
 
 file_uri() { python3 -I -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).as_uri())' "$1"; }
 
@@ -33,6 +34,6 @@ step_switchcraft() {
     return 0
   fi
   mkdir -p "$CACHE/downloads"
-  curl -fsSL -o "$CACHE/downloads/$SWITCHCRAFT_DEB" "$SWITCHCRAFT_URL"
+  download "$SWITCHCRAFT_URL" "$CACHE/downloads/$SWITCHCRAFT_DEB" "$SWITCHCRAFT_SHA256" || die "Could not get Switchcraft"
   sudo apt-get install -y "$CACHE/downloads/$SWITCHCRAFT_DEB"
 }

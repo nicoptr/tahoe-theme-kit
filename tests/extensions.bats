@@ -66,3 +66,11 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
     grep -qx "dconf load /org/gnome/shell/extensions/$p/" "$CALLS"
   done
 }
+
+@test "extensions: checksum mismatch stops before installing" {
+  setup_ext
+  STUB_RC_SHA256SUM=1 run strict step_extensions <<<"y"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"user-theme@gnome-shell-extensions.gcampax.github.com"* ]]
+  ! grep -q '^gnome-extensions install' "$CALLS"
+}

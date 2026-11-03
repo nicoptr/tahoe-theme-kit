@@ -1,6 +1,7 @@
 PACKAGES=(git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl)
 
 step_packages() {
+  sudo apt-get update
   sudo apt-get install -y "${PACKAGES[@]}"
 }
 

@@ -21,3 +21,9 @@ load helpers
   grep -q "checkout --quiet --detach 1e45e19f510edb8cde18fa84d6cd5319f60b086b" "$CALLS"
   grep -q "checkout --quiet --detach 839848b9a8a38a92a6936e30c4abe35cc6f2546d" "$CALLS"
 }
+
+@test "packages: apt-get update before installing" {
+  load_lib
+  run step_packages
+  [ "$(sed -n 1p "$CALLS")" = "sudo apt-get update" ]
+}
