@@ -1,4 +1,4 @@
-PACKAGES=(git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl python3-nautilus patch)
+PACKAGES=(git sassc libglib2.0-dev-bin libxml2-utils jq wmctrl x11-utils imagemagick curl python3-nautilus patch)
 
 step_packages() {
   sudo apt-get update

@@ -4,15 +4,17 @@ setup_boot() {
   load_lib
   mkdir -p "$RUNTIME" "$CACHE/MacTahoe-gtk-theme"
   convert -size 4x4 xc:white "$BATS_TEST_TMPDIR/logo.png"
-  { cat "$REPO_DIR/variants/amethyst.conf"; printf 'BG_DARK=%q\nPLYMOUTH_LOGO=%q\n' /bg/dark.jpg "$BATS_TEST_TMPDIR/logo.png"; } >"$RUNTIME/tahoe.conf"
+  convert -size 4x4 xc:navy "$BATS_TEST_TMPDIR/dark.jpg"
+  { cat "$REPO_DIR/variants/amethyst.conf"; printf 'BG_DARK=%q\nPLYMOUTH_LOGO=%q\n' "$BATS_TEST_TMPDIR/dark.jpg" "$BATS_TEST_TMPDIR/logo.png"; } >"$RUNTIME/tahoe.conf"
   source "$RUNTIME/tahoe.conf"
 }
 
-@test "gdm: tweaks.sh without -c, then the Yaru alternative" {
+@test "gdm: blurred background made here, tweaks.sh without -c, then the Yaru alternative" {
   setup_boot
   run step_gdm <<<"y"
   [ "$status" -eq 0 ]
-  grep -qx "sudo ./tweaks.sh -g -b /bg/dark.jpg -p 45 -h smaller -t purple" "$CALLS"
+  identify "$CACHE/gdm-background.png"
+  grep -qx "sudo ./tweaks.sh -g -b $CACHE/gdm-background.png -nb -nd -p 45 -h smaller -t purple" "$CALLS"
   grep -qx "sudo update-alternatives --set gdm-theme.gresource /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource" "$CALLS"
 }
 

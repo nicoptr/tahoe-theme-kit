@@ -4,8 +4,12 @@ PLYMOUTH_THEMES=/usr/share/plymouth/themes
 step_gdm() {
   ask_yes_no "Login screen theme (GDM, dark variant with your dark wallpaper)?" y || return 0
   source "$RUNTIME/tahoe.conf"
+  # blur and darken like tweaks.sh does: its own path wants `magick` (missing on 24.04) and then
+  # runs a network check that can exit silently, stopping the installer
+  local bg=$CACHE/gdm-background.png
+  convert "$BG_DARK" -scale 1280x -blur 0x50 -fill black -colorize 45% "$bg"
   # no -c: tweaks.sh reads colors[1], which is empty when a single color is passed
-  (cd "$CACHE/MacTahoe-gtk-theme" && sudo ./tweaks.sh -g -b "$BG_DARK" -p 45 -h smaller -t "$ACCENT")
+  (cd "$CACHE/MacTahoe-gtk-theme" && sudo ./tweaks.sh -g -b "$bg" -nb -nd -p 45 -h smaller -t "$ACCENT")
   # Ubuntu's GDM reads this alternative, which may still point to an old custom theme
   sudo update-alternatives --set gdm-theme.gresource "$YARU_GRESOURCE"
 }
