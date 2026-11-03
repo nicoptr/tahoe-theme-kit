@@ -1,0 +1,14 @@
+{
+  "dark" : [
+    {
+      "command" : "@RUNTIME@/tahoe-mode.sh dark",
+      "enabled" : true
+    }
+  ],
+  "light" : [
+    {
+      "command" : "@RUNTIME@/tahoe-mode.sh light",
+      "enabled" : true
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+terminal-screen-container scrollbar slider {
+  min-width: 6px;
+  background-color: alpha(#808080, 0.35);
+}
