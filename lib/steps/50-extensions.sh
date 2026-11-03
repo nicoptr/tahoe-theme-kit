@@ -4,10 +4,11 @@ EXTENSIONS=(
   "blur-my-shell@aunetx 77413 3218766acf4b0feed700ba518a1db5616f59c7e1036758ffbd18bf4743e9b2db"
   "rounded-window-corners@fxgn 65276 7e2271cc9717e7f7900825d2d8f85dd77e9085679814d1c8590010cfe2a041a4"
   "hidetopbar@mathieu.bidon.ca 76242 c4bccf4e9517c429d1de88c0263037b4ab73804f7024f2376c2419e186892200"
+  "dash-to-dock@micxgx.gmail.com 76105 b05003e79835a35451e94931539ba1977f2a7a93b652a4fc6b7be60a77c18ae1"
   "CoverflowAltTab@palatis.blogspot.com 61982 0d5a430205a88e807d94a41b7849dd4b027219c9df36892d7cbfb3db948d089e"
 )
 WOBBLY="compiz-windows-effect@hermes83.github.com 67396 744d0f98858dac57bdcff50c399d63a9aea7b1db1c5765a967081cc7802fad0e"
-EXTENSION_SETTINGS=(blur-my-shell rounded-window-corners-reborn hidetopbar appindicator)
+EXTENSION_SETTINGS=(blur-my-shell rounded-window-corners-reborn hidetopbar appindicator dash-to-dock)
 
 install_extension() {
   local uuid=$1 tag=$2 sha256=$3 zip=$CACHE/downloads/$1.zip

@@ -13,7 +13,7 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   [ "$status" -eq 0 ]
   grep -q "^curl .*download-extension/blur-my-shell@aunetx.shell-extension.zip?version_tag=77413" "$CALLS"
   grep -q "^gnome-extensions install --force $CACHE/downloads/blur-my-shell@aunetx.zip" "$CALLS"
-  [ "$(grep -c '^gnome-extensions install' "$CALLS")" -eq 6 ]
+  [ "$(grep -c '^gnome-extensions install' "$CALLS")" -eq 7 ]
 }
 
 @test "extensions: enabled list keeps existing entries and adds each uuid once" {
@@ -58,10 +58,10 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   [[ "$output" == *user-theme@gnome-shell-extensions.gcampax.github.com* ]]
 }
 
-@test "extensions: settings reset then loaded for the 4 extensions" {
+@test "extensions: settings reset then loaded for the 5 extensions" {
   setup_ext
   run step_extensions <<<"y"
-  for p in blur-my-shell rounded-window-corners-reborn hidetopbar appindicator; do
+  for p in blur-my-shell rounded-window-corners-reborn hidetopbar appindicator dash-to-dock; do
     grep -qx "dconf reset -f /org/gnome/shell/extensions/$p/" "$CALLS"
     grep -qx "dconf load /org/gnome/shell/extensions/$p/" "$CALLS"
   done

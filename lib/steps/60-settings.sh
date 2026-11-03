@@ -1,6 +1,7 @@
-SWITCHCRAFT_DEB=switchcraft_1.2.1_amd64.deb
-SWITCHCRAFT_URL=https://github.com/kem-a/switchcraft/releases/download/v1.2.1/$SWITCHCRAFT_DEB
+SWITCHCRAFT_URL=https://github.com/kem-a/switchcraft/releases/download/v1.2.1/switchcraft_1.2.1_amd64.deb
 SWITCHCRAFT_SHA256=ef58113be813c67f6bc985906522c5d3d7dcfecff776b50713024570b1814c96
+ULAUNCHER_URL=https://github.com/Ulauncher/Ulauncher/releases/download/5.16.2/ulauncher_5.16.2_all.deb
+ULAUNCHER_SHA256=e6bd4f55a71daf4d3f5bd1a0f8d11d04c80c536938dde4ba3ccc8849049fe788
 
 file_uri() { python3 -I -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).as_uri())' "$1"; }
 
@@ -29,12 +30,16 @@ step_settings() {
   systemctl --user enable systemd-tmpfiles-setup.service
 }
 
-step_switchcraft() {
-  if [[ "$(dpkg-query -W -f='${Status}' switchcraft 2>/dev/null)" == 'install ok installed' ]]; then
-    log "Switchcraft already installed."
+install_deb() {
+  local pkg=$1 url=$2 sha256=$3 deb=$CACHE/downloads/${2##*/}
+  if [[ "$(dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null)" == 'install ok installed' ]]; then
+    log "$pkg already installed."
     return 0
   fi
   mkdir -p "$CACHE/downloads"
-  download "$SWITCHCRAFT_URL" "$CACHE/downloads/$SWITCHCRAFT_DEB" "$SWITCHCRAFT_SHA256" || die "Could not get Switchcraft"
-  sudo apt-get install -y "$CACHE/downloads/$SWITCHCRAFT_DEB"
+  download "$url" "$deb" "$sha256" || die "Could not get $pkg"
+  sudo apt-get install -y "$deb"
 }
+
+step_switchcraft() { install_deb switchcraft "$SWITCHCRAFT_URL" "$SWITCHCRAFT_SHA256"; }
+step_ulauncher() { install_deb ulauncher "$ULAUNCHER_URL" "$ULAUNCHER_SHA256"; }

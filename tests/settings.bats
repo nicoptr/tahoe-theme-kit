@@ -60,6 +60,20 @@ setup_settings() {
   refute grep -q '^sudo apt-get install' "$CALLS"
 }
 
+@test "ulauncher: downloads the pinned deb and installs it" {
+  load_lib
+  run step_ulauncher
+  [ "$status" -eq 0 ]
+  grep -qx "sudo apt-get install -y $CACHE/downloads/ulauncher_5.16.2_all.deb" "$CALLS"
+}
+
+@test "settings: ulauncher starts at login with the Ctrl+Super hotkey" {
+  setup_settings
+  run step_settings
+  grep -q '^Exec=.*ulauncher --hide-window$' "$HOME/.config/autostart/ulauncher.desktop"
+  [ "$(jq -r '."hotkey-show-app"' "$HOME/.config/ulauncher/settings.json")" = '<Primary>Super_L' ]
+}
+
 @test "settings: a symlinked config file stays a symlink and keeps its mode" {
   setup_settings
   mkdir -p "$HOME/dotfiles" "$HOME/.config/gtk-3.0"

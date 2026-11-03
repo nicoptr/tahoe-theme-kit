@@ -22,7 +22,7 @@ fake_script() {
     run "$REPO_DIR/install.sh" amethyst
   echo "$output"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"[15/15] finish"* ]]
+  [[ "$output" == *"[16/16] finish"* ]]
   [[ "$output" == *Monitoring* ]]
   [ -L "$HOME/.config/gtk-4.0/gtk.css" ]
 }

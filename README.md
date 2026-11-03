@@ -43,9 +43,10 @@ When it ends:
 | assets | asks for the light wallpaper, the dark wallpaper and the boot logo, then writes `~/.local/share/tahoe-theme-kit/tahoe.conf` | delete the folder |
 | theme | MacTahoe GTK + shell theme (`-l -HD --shell -p 45 -h smaller --round`) plus the kit's shell fixes | `MacTahoe-gtk-theme/install.sh -r` |
 | icons | MacTahoe icons and cursors | `MacTahoe-icon-theme/install.sh -r` |
-| extensions | User Themes, Blur my Shell, Rounded Window Corners Reborn, Hide Top Bar, Coverflow Alt-Tab; optional wobbly windows (Compiz windows effect, patched) | Extension Manager |
+| extensions | User Themes, Blur my Shell, Rounded Window Corners Reborn, Hide Top Bar, Dash to Dock (floating, bottom), Coverflow Alt-Tab; optional wobbly windows (Compiz windows effect, patched) | Extension Manager |
 | settings | wallpapers, cursor, terminal follows the system, thin terminal scrollbar, Switchcraft commands | GNOME Settings |
 | switchcraft | [Switchcraft](https://github.com/kem-a/switchcraft) 1.2.1, which watches the Dark Style button | `apt remove switchcraft` |
+| ulauncher | [Ulauncher](https://ulauncher.io) 5.16.2, opens with Ctrl+Super, starts at login | `apt remove ulauncher` |
 | gtk4 | patched GTK4 that reloads its CSS live, held with `apt-mark` | see [GTK4](#gtk4) |
 | ghostty | [Ghostty](https://ghostty.org) as the default terminal, with a Tahoe title bar and colors from the variant. Nautilus gets "Open in Ghostty" in place of GNOME Terminal's "Open in Terminal" | `snap remove ghostty`, `apt install nautilus-extension-gnome-terminal` |
 | gdm | login screen in the dark variant, with your dark wallpaper blurred | `sudo ~/.cache/tahoe-theme-kit/MacTahoe-gtk-theme/tweaks.sh -g -r` |
