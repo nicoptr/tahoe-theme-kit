@@ -1,0 +1,135 @@
+diff -ruN compiz-windows-effect@hermes83.github.com/metadata.json compiz-windows-effect@hermes83.github.com/metadata.json
+--- compiz-windows-effect@hermes83.github.com/metadata.json	2025-12-20 23:40:00.000000000 +0100
++++ compiz-windows-effect@hermes83.github.com/metadata.json	2026-11-03 10:40:07.071594217 +0100
+@@ -12,5 +12,5 @@
+   ],
+   "url": "https://github.com/hermes83/compiz-windows-effect",
+   "uuid": "compiz-windows-effect@hermes83.github.com",
+-  "version": 29
++  "version": 9999
+ }
+\ No newline at end of file
+diff -ruN compiz-windows-effect@hermes83.github.com/src/effects/shadow_mirror.js compiz-windows-effect@hermes83.github.com/src/effects/shadow_mirror.js
+--- compiz-windows-effect@hermes83.github.com/src/effects/shadow_mirror.js	1970-01-01 01:00:00.000000000 +0100
++++ compiz-windows-effect@hermes83.github.com/src/effects/shadow_mirror.js	2026-11-03 10:33:13.197828453 +0100
+@@ -0,0 +1,68 @@
++'use strict';
++
++import Clutter from 'gi://Clutter';
++import GObject from 'gi://GObject';
++
++// Deforms the shadow actor of "Rounded Window Corners Reborn" with the same
++// wobbly model as its window, so the shadow follows the window wobble.
++export class ShadowMirrorEffect extends Clutter.DeformEffect {
++    static {
++        GObject.registerClass(this);
++    }
++
++    _init(source, windowActor, tiles) {
++        super._init();
++        this.source = source;
++        this.windowActor = windowActor;
++        this.set_n_tiles(tiles[0], tiles[1]);
++    }
++
++    vfunc_modify_paint_volume(pv) {
++        return false;
++    }
++
++    vfunc_deform_vertex(w, h, v) {
++        const model = this.source.wobblyModel;
++        const shadow = this.get_actor();
++        if (!model || !shadow) {
++            return;
++        }
++
++        const [shadowW, shadowH] = shadow.get_size();
++        const offsetX = shadow.x - this.windowActor.x;
++        const offsetY = shadow.y - this.windowActor.y;
++        const tx = (v.tx * shadowW + offsetX) / this.source.width;
++        const ty = (v.ty * shadowH + offsetY) / this.source.height;
++
++        const [x, y] = bezier(model.objects, tx, ty);
++        v.x = (x + this.source.deltaX - offsetX) * w / shadowW;
++        v.y = (y + this.source.deltaY - offsetY) * h / shadowH;
++    }
++
++    destroy() {
++        this.get_actor()?.remove_effect(this);
++        this.source = null;
++        this.windowActor = null;
++    }
++}
++
++function bernstein(t) {
++    const s = 1 - t;
++    return [s * s * s, 3 * t * s * s, 3 * t * t * s, t * t * t];
++}
++
++function bezier(objects, tx, ty) {
++    const bx = bernstein(tx);
++    const by = bernstein(ty);
++    let x = 0;
++    let y = 0;
++    for (let j = 0; j < 4; j++) {
++        for (let i = 0; i < 4; i++) {
++            const c = by[j] * bx[i];
++            const o = objects[j * 4 + i];
++            x += c * o.x;
++            y += c * o.y;
++        }
++    }
++    return [x, y];
++}
+diff -ruN compiz-windows-effect@hermes83.github.com/src/effects/wobbly.js compiz-windows-effect@hermes83.github.com/src/effects/wobbly.js
+--- compiz-windows-effect@hermes83.github.com/src/effects/wobbly.js	2025-12-19 22:43:13.000000000 +0100
++++ compiz-windows-effect@hermes83.github.com/src/effects/wobbly.js	2026-11-03 10:33:24.330113380 +0100
+@@ -29,6 +29,7 @@
+ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+ 
+ import { WobblyModel } from './wobbly_model.js';
++import { ShadowMirrorEffect } from './shadow_mirror.js';
+ 
+ export class WobblyEffect extends Clutter.DeformEffect {
+     static {
+@@ -61,6 +62,7 @@
+         this.actorY = 0;
+ 
+         this.wobblyModel = null;
++        this.shadowMirror = null;
+         this.coeff = null;
+         this.deformedObjects = null;
+         this.tilesX = 0;
+@@ -141,6 +143,12 @@
+ 
+             this.overviewShowingEvent = Main.overview.connect('showing', this.destroy.bind(this));
+ 
++            const shadow = actor.rwcCustomData?.shadow;
++            if (shadow) {
++                this.shadowMirror = new ShadowMirrorEffect(this, actor, [this.X_TILES, this.Y_TILES]);
++                shadow.add_effect(this.shadowMirror);
++            }
++
+             this.timerId = new Clutter.Timeline({actor: actor, duration: this.CLUTTER_TIMELINE_DURATION});
+             this.newFrameEvent = this.timerId.connect('new-frame', this.on_new_frame_event.bind(this));
+             this.completedEvent = this.timerId.connect('completed', this.destroy.bind(this));
+@@ -170,6 +178,11 @@
+             this.timerId = null;
+         }
+ 
++        if (this.shadowMirror) {
++            this.shadowMirror.destroy();
++            this.shadowMirror = null;
++        }
++
+         if (this.wobblyModel) {
+             this.wobblyModel.dispose();
+             this.wobblyModel = null;
+@@ -258,6 +271,7 @@
+         [this.actorX, this.actorY] = this.actor.get_position();
+         if ((this.newX === this.actorX && this.newY === this.actorY) || 'move' !== this.operationType) {
+             this.invalidate();
++            this.shadowMirror?.invalidate();
+         }
+     }
+ 
