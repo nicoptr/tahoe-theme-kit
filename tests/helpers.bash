@@ -15,3 +15,8 @@ load_lib() {
 }
 
 calls() { cat "$CALLS"; }
+
+# runs a step with errexit on, like install.sh does
+strict() {
+  REPO_DIR=$REPO_DIR bash -euo pipefail -c 'source "$1/lib/common.sh"; for f in "$1"/lib/steps/*.sh; do source "$f"; done; shift; "$@"' _ "$REPO_DIR" "$@"
+}

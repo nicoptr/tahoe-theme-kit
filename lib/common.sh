@@ -38,7 +38,28 @@ load_variant() {
     log "Variants: $(variant_names)"
     exit 2
   fi
+  VARIANT_CONF=$conf
   source "$conf"
+}
+
+ask_image() {
+  local prompt=$1 default=$2 path interactive=true
+  [[ ${TAHOE_YES:-} == 1 ]] && interactive=false
+  while true; do
+    path=
+    if $interactive; then
+      printf '%s\n  Enter keeps %s\n  path: ' "$prompt" "$default" >&2
+      read -r path || interactive=false
+    fi
+    path=${path:-$default}
+    path=${path/#\~/$HOME}
+    if identify "$path" >/dev/null 2>&1; then
+      realpath "$path"
+      return 0
+    fi
+    $interactive || die "Not an image: $path"
+    log "Not an image: $path"
+  done
 }
 
 render() {
