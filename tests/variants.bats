@@ -37,6 +37,22 @@ PY
   done
 }
 
+@test "terminal palette colors are readable on the terminal background" {
+  for conf in "$REPO_DIR"/variants/*.conf; do
+    source "$conf"
+    for mode in DARK LIGHT; do
+      local -n c=TERMINAL_$mode
+      local -n p=TERMINAL_${mode}_PALETTE
+      mapfile -t colors < <(grep -o "#[0-9a-fA-F]\{6\}" <<<"$p")
+      for i in {1..14}; do
+        min=4.5; ((i >= 8)) && min=3
+        ratio=$(contrast "${colors[i]}" "${c[0]}")
+        awk -v r="$ratio" -v m="$min" 'BEGIN{exit !(r >= m)}' || { echo "$conf $mode slot $i: $ratio < $min"; return 1; }
+      done
+    done
+  done
+}
+
 @test "usage lists the variants" {
   run "$REPO_DIR/install.sh"
   [[ "$output" == *amethyst* ]]
