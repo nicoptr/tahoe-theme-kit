@@ -1,0 +1,21 @@
+
+/* tahoe-dark-shell overrides */
+.datemenu-popover,
+.notification-banner,
+.notification-banner:hover,
+.notification-banner:active {
+  background-color: rgba(0, 0, 0, 0.01) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.datemenu-popover .message,
+.events-button,
+.world-clocks-button,
+.weather-button {
+  background-color: rgba(56, 56, 56, 0.45) !important;
+}
+.datemenu-popover .message:hover,
+.events-button:hover,
+.world-clocks-button:hover,
+.weather-button:hover {
+  background-color: rgba(69, 69, 69, 0.6) !important;
+}
