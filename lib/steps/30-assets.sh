@@ -19,10 +19,18 @@ previous_or() {
   if [[ -f $value ]]; then echo "$value"; else echo "$2"; fi
 }
 
+tint_wallpaper() {
+  local dest
+  dest=$CACHE/wallpaper/$(basename "$VARIANT_CONF" .conf)-$1.jpeg
+  mkdir -p "$CACHE/wallpaper"
+  convert "$CACHE/MacTahoe-gtk-theme/wallpaper/MacTahoe-$1.jpeg" -modulate "100,100,$2" "$dest"
+  echo "$dest"
+}
+
 step_assets() {
-  local wallpapers=$CACHE/MacTahoe-gtk-theme/wallpaper light dark logo
-  light=$(ask_image "Light wallpaper" "$(previous_or BG_LIGHT "$wallpapers/MacTahoe-day.jpeg")")
-  dark=$(ask_image "Dark wallpaper (also the login screen)" "$(previous_or BG_DARK "$wallpapers/MacTahoe-night.jpeg")")
+  local light dark logo
+  light=$(ask_image "Light wallpaper" "$(previous_or BG_LIGHT "$(tint_wallpaper day "${WALLPAPER_HUE[0]}")")")
+  dark=$(ask_image "Dark wallpaper (also the login screen)" "$(previous_or BG_DARK "$(tint_wallpaper night "${WALLPAPER_HUE[1]}")")")
   logo=$(ask_image "Boot splash logo (PNG, transparent background, light on black)" "$(previous_or PLYMOUTH_LOGO "$PLYMOUTH_DEFAULT")")
 
   mkdir -p "$RUNTIME/backgrounds"

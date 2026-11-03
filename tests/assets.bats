@@ -17,12 +17,19 @@ setup_assets() {
   run step_assets <<<$'\n\n\n'
   [ "$status" -eq 0 ]
   source "$RUNTIME/tahoe.conf"
-  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-MacTahoe-day.jpeg" ]
-  [ "$BG_DARK" = "$RUNTIME/backgrounds/dark-MacTahoe-night.jpeg" ]
+  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-amethyst-day.jpeg" ]
+  [ "$BG_DARK" = "$RUNTIME/backgrounds/dark-amethyst-night.jpeg" ]
   [ "$PLYMOUTH_LOGO" = "$RUNTIME/backgrounds/logo-ubuntu-logo.png" ]
   [ -f "$BG_LIGHT" ] && [ -f "$BG_DARK" ] && [ -f "$PLYMOUTH_LOGO" ]
   [ "$ACCENT" = purple ]
   [ -x "$RUNTIME/tahoe-mode.sh" ] && [ -f "$RUNTIME/gen-themes.py" ] && [ -f "$RUNTIME/restack-below.py" ]
+}
+
+@test "assets: default wallpapers are MacTahoe's, recolored for the variant" {
+  setup_assets
+  run step_assets <<<$'\n\n\n'
+  source "$RUNTIME/tahoe.conf"
+  [ "$(convert "$BG_LIGHT" -format '%[hex:p{0,0}]' info:)" != FF0000 ]
 }
 
 @test "assets: ~ and spaces in the path work" {
@@ -42,13 +49,13 @@ setup_assets() {
   [ "$status" -eq 0 ]
   [[ "$output" == *"Not an image"* ]]
   source "$RUNTIME/tahoe.conf"
-  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-MacTahoe-day.jpeg" ]
+  [ "$BG_LIGHT" = "$RUNTIME/backgrounds/light-amethyst-day.jpeg" ]
 }
 
 @test "assets: rerun overwrites tahoe.conf and accepts the already copied file" {
   setup_assets
   run step_assets <<<$'\n\n\n'
-  run step_assets <<<$"$RUNTIME/backgrounds/light-MacTahoe-day.jpeg"$'\n\n\n'
+  run step_assets <<<$"$RUNTIME/backgrounds/light-amethyst-day.jpeg"$'\n\n\n'
   [ "$status" -eq 0 ]
   [ "$(grep -c '^BG_LIGHT=' "$RUNTIME/tahoe.conf")" -eq 1 ]
   [ "$(grep -c '^ACCENT=' "$RUNTIME/tahoe.conf")" -eq 1 ]
@@ -68,7 +75,7 @@ setup_assets() {
   export PLYMOUTH_DEFAULT VARIANT_CONF
   run strict step_assets </dev/null
   [ "$status" -eq 0 ]
-  grep -q '^BG_DARK=.*dark-MacTahoe-night.jpeg$' "$RUNTIME/tahoe.conf"
+  grep -q '^BG_DARK=.*dark-amethyst-night.jpeg$' "$RUNTIME/tahoe.conf"
 }
 
 @test "assets: a rerun offers the images chosen last time" {

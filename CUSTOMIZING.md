@@ -32,6 +32,7 @@ On the user's machine, `~/.local/share/tahoe-theme-kit/tahoe.conf` is the varian
 | `ACCENT` | a MacTahoe color: `blue purple pink red orange yellow green grey` |
 | `ACCENT_HEX` | the accent darkened until it is readable on a light background (≥ 4.5:1 on white). Used in the light shell and the Plymouth progress bar |
 | `ICON_THEME` | `MacTahoe-<ACCENT>` |
+| `WALLPAPER_HUE` | `(day night)`: hue rotation of MacTahoe's day and night wallpapers for the default wallpapers (ImageMagick `-modulate 100,100,<hue>`; 100 = unchanged, 200 = +180°). The two originals have different hues, so tune them separately |
 | `TERMINAL_DARK`, `TERMINAL_LIGHT` | `('bg' 'fg' 'cursor' 'highlight' transparency%)` |
 | `TERMINAL_DARK_PALETTE`, `TERMINAL_LIGHT_PALETTE` | 16 colors, as a GVariant string list |
 

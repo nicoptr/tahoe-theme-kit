@@ -40,7 +40,7 @@ When it ends:
 |---|---|---|
 | packages | `git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl python3-nautilus` | `apt remove` |
 | upstream | MacTahoe gtk + icon repos, at pinned commits, in `~/.cache/tahoe-theme-kit` | delete the folder |
-| assets | asks for the light wallpaper, the dark wallpaper and the boot logo, then writes `~/.local/share/tahoe-theme-kit/tahoe.conf` | delete the folder |
+| assets | asks for the light wallpaper, the dark wallpaper (defaults: MacTahoe's, recolored to the variant) and the boot logo, then writes `~/.local/share/tahoe-theme-kit/tahoe.conf` | delete the folder |
 | theme | MacTahoe GTK + shell theme (`-l -HD --shell -p 45 -h smaller --round`) plus the kit's shell fixes | `MacTahoe-gtk-theme/install.sh -r` |
 | icons | MacTahoe icons and cursors | `MacTahoe-icon-theme/install.sh -r` |
 | extensions | User Themes, Blur my Shell, Rounded Window Corners Reborn, Hide Top Bar, Dash to Dock (floating, bottom), Coverflow Alt-Tab; optional wobbly windows (Compiz windows effect, patched) | Extension Manager |
@@ -138,6 +138,6 @@ The tests run every step against stub commands in `tests/stubs/`. They never cal
 
 ## Credits and license
 
-[MacTahoe GTK theme](https://github.com/vinceliuice/MacTahoe-gtk-theme) and [icon theme](https://github.com/vinceliuice/MacTahoe-icon-theme) by vinceliuice, [Switchcraft](https://github.com/kem-a/switchcraft) by kem-a, [gtk4-live-css](https://github.com/MainstreamOS/gtk4-live-css). Default wallpapers are MacTahoe's.
+[MacTahoe GTK theme](https://github.com/vinceliuice/MacTahoe-gtk-theme) and [icon theme](https://github.com/vinceliuice/MacTahoe-icon-theme) by vinceliuice, [Switchcraft](https://github.com/kem-a/switchcraft) by kem-a, [gtk4-live-css](https://github.com/MainstreamOS/gtk4-live-css). Default wallpapers are MacTahoe's, recolored for each variant.
 
 GPL-3.0, see [LICENSE](LICENSE).

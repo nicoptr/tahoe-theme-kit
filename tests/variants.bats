@@ -12,13 +12,14 @@ print(f"{(a + 0.05) / (b + 0.05):.2f}")
 PY
 }
 
-@test "every variant defines the 7 keys with valid values" {
+@test "every variant defines the 8 keys with valid values" {
   for conf in "$REPO_DIR"/variants/*.conf; do
     (
       source "$conf"
       [[ " blue purple pink red orange yellow green grey " == *" $ACCENT "* ]]
       [[ $ACCENT_HEX =~ ^#[0-9a-fA-F]{6}$ ]]
       [ -n "$ICON_THEME" ]
+      [ "${#WALLPAPER_HUE[@]}" -eq 2 ] && [[ ${WALLPAPER_HUE[0]} =~ ^[0-9]+$ && ${WALLPAPER_HUE[1]} =~ ^[0-9]+$ ]]
       [ "${#TERMINAL_DARK[@]}" -eq 5 ] && [ "${#TERMINAL_LIGHT[@]}" -eq 5 ]
       [ "$(grep -o "#[0-9a-fA-F]\{6\}" <<<"$TERMINAL_DARK_PALETTE" | wc -l)" -eq 16 ]
       [ "$(grep -o "#[0-9a-fA-F]\{6\}" <<<"$TERMINAL_LIGHT_PALETTE" | wc -l)" -eq 16 ]
