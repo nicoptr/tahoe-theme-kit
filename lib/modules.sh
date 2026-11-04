@@ -259,3 +259,42 @@ mod_nvidia_install() {
   cp "$REPO_DIR/optional/60-gsk-renderer.conf" "$HOME/.config/environment.d/"
 }
 mod_nvidia_remove() { rm -f "$HOME/.config/environment.d/60-gsk-renderer.conf"; }
+
+gtk4_stock_version() {
+  apt-cache madison libgtk-4-1 | awk -F' *[|] *' '$2 !~ /livecss/ {print $2}' | sort -V | tail -n1
+}
+
+mod_gtk4_remove() {
+  local version pkg args=()
+  version=$(gtk4_stock_version)
+  [[ -n $version ]] || { warn "No stock GTK4 in the archive: keeping the patched one."; return "$REFUSED"; }
+  for pkg in "${GTK4_PACKAGES[@]}"; do args+=("$pkg=$version"); done
+  sudo apt-mark unhold "${GTK4_PACKAGES[@]}"
+  if ! sudo apt-get install -y --allow-downgrades "${args[@]}" ||
+    [[ "$(dpkg-query -W -f='${Version}' libgtk-4-1)" == *+livecss* ]]; then
+    sudo apt-mark hold "${GTK4_PACKAGES[@]}"
+    die "GTK4 is still the patched one: held again."
+  fi
+}
+
+mod_gdm_remove() {
+  if [[ -x $CACHE/MacTahoe-gtk-theme/tweaks.sh ]]; then
+    (cd "$CACHE/MacTahoe-gtk-theme" && sudo ./tweaks.sh -g -r)
+  else
+    sudo mv -f "$YARU_GRESOURCE.bak" "$YARU_GRESOURCE"
+  fi
+  sudo update-alternatives --set gdm-theme.gresource "$YARU_GRESOURCE"
+  [[ ! -e $YARU_GRESOURCE.bak ]] || die "The login screen still has the MacTahoe theme."
+}
+
+mod_plymouth_remove() {
+  local bgrt=$PLYMOUTH_THEMES/bgrt/bgrt.plymouth ours=$PLYMOUTH_THEMES/tahoe-logo/tahoe-logo.plymouth
+  [[ -f $bgrt ]] || { warn "Ubuntu's boot splash (bgrt) is missing: keeping the kit's."; return "$REFUSED"; }
+  sudo update-alternatives --set default.plymouth "$bgrt"
+  if ! sudo update-initramfs -u; then
+    sudo update-alternatives --set default.plymouth "$ours"
+    die "Could not rebuild the initramfs: the kit's boot splash stays."
+  fi
+  sudo update-alternatives --remove default.plymouth "$ours"
+  sudo rm -rf "$PLYMOUTH_THEMES/tahoe-logo"
+}

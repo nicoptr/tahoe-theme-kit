@@ -168,3 +168,111 @@ fake_script() {
   grep -qx "gsettings set org.gnome.desktop.wm.keybindings switch-input-source \\['XF86Keyboard'\\]" "$CALLS"
   grep -qx "shortcut-search=\\['<Super>space'\\]" "$REPO_DIR/dconf/search-light.dconf"
 }
+
+# sudo runs the command for real (all paths are under $BATS_TEST_TMPDIR); $SUDO_FAIL_ON makes one command fail
+real_sudo() {
+  sudo() {
+    echo "sudo $*" >>"$CALLS"
+    [[ -n ${SUDO_FAIL_ON:-} && $1 == "$SUDO_FAIL_ON" ]] && return 1
+    case $1 in apt-get | apt-mark | update-alternatives | update-initramfs) return 0 ;; esac
+    "$@"
+  }
+}
+
+MADISON='libgtk-4-1 | 4.14.5+ds-0ubuntu0.10+livecss1 | file:/var/cache local
+libgtk-4-1 | 4.14.5+ds-0ubuntu0.10 | http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+libgtk-4-1 | 4.14.2+ds-1ubuntu1 | http://archive.ubuntu.com/ubuntu noble/main amd64 Packages'
+
+@test "gtk4 remove: unhold, then the newest stock version for every package" {
+  setup_mod
+  STUB_OUT_APT_CACHE=$MADISON STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10 run mod_gtk4_remove
+  [ "$status" -eq 0 ]
+  grep -qx "sudo apt-mark unhold ${GTK4_PACKAGES[*]}" "$CALLS"
+  grep -qx "sudo apt-get install -y --allow-downgrades libgtk-4-1=4.14.5+ds-0ubuntu0.10 libgtk-4-bin=4.14.5+ds-0ubuntu0.10 libgtk-4-common=4.14.5+ds-0ubuntu0.10 gir1.2-gtk-4.0=4.14.5+ds-0ubuntu0.10 libgtk-4-media-gstreamer=4.14.5+ds-0ubuntu0.10" "$CALLS"
+}
+
+@test "gtk4 remove: no stock version in the archive → refused, nothing touched" {
+  setup_mod
+  STUB_OUT_APT_CACHE='libgtk-4-1 | 4.14.5+ds-0ubuntu0.10+livecss1 | file:/var/cache local' run mod_gtk4_remove
+  [ "$status" -eq "$REFUSED" ]
+  refute grep -q 'apt-mark unhold' "$CALLS"
+  refute grep -q 'apt-get install' "$CALLS"
+}
+
+@test "gtk4 remove: still patched afterwards → held again, fails" {
+  setup_mod
+  STUB_OUT_APT_CACHE=$MADISON STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10+livecss1 run mod_gtk4_remove
+  [ "$status" -ne 0 ]
+  [ "$(grep -c '^sudo apt-mark hold' "$CALLS")" -eq 1 ]
+}
+
+@test "gdm remove: MacTahoe's revert, Yaru alternative, backup gone" {
+  setup_mod
+  real_sudo
+  mkdir -p "$(dirname "$YARU_GRESOURCE")"
+  echo mactahoe >"$YARU_GRESOURCE" && echo yaru >"$YARU_GRESOURCE.bak"
+  fake_script "$CACHE/MacTahoe-gtk-theme/tweaks.sh" "mv -f '$YARU_GRESOURCE.bak' '$YARU_GRESOURCE'"
+  run mod_gdm_remove
+  [ "$status" -eq 0 ]
+  grep -qx "sudo ./tweaks.sh -g -r" "$CALLS"
+  grep -qx "sudo update-alternatives --set gdm-theme.gresource $YARU_GRESOURCE" "$CALLS"
+  [ "$(cat "$YARU_GRESOURCE")" = yaru ]
+}
+
+@test "gdm remove: no MacTahoe clone → the backup is put back by hand" {
+  setup_mod
+  real_sudo
+  mkdir -p "$(dirname "$YARU_GRESOURCE")"
+  echo mactahoe >"$YARU_GRESOURCE" && echo yaru >"$YARU_GRESOURCE.bak"
+  run mod_gdm_remove
+  [ "$status" -eq 0 ]
+  [ "$(cat "$YARU_GRESOURCE")" = yaru ]
+  [ "$(mod_gdm_status)" = off ]
+}
+
+@test "gdm remove: backup still there afterwards → fails" {
+  setup_mod
+  real_sudo
+  mkdir -p "$(dirname "$YARU_GRESOURCE")"
+  echo mactahoe >"$YARU_GRESOURCE" && echo yaru >"$YARU_GRESOURCE.bak"
+  fake_script "$CACHE/MacTahoe-gtk-theme/tweaks.sh" "true"
+  run mod_gdm_remove
+  [ "$status" -ne 0 ]
+}
+
+setup_plymouth() {
+  mkdir -p "$PLYMOUTH_THEMES/bgrt" "$PLYMOUTH_THEMES/tahoe-logo"
+  touch "$PLYMOUTH_THEMES/bgrt/bgrt.plymouth" "$PLYMOUTH_THEMES/tahoe-logo/tahoe-logo.plymouth"
+}
+
+@test "plymouth remove: bgrt back, initramfs rebuilt, theme deleted" {
+  setup_mod
+  real_sudo
+  setup_plymouth
+  run mod_plymouth_remove
+  [ "$status" -eq 0 ]
+  grep -qx "sudo update-alternatives --set default.plymouth $PLYMOUTH_THEMES/bgrt/bgrt.plymouth" "$CALLS"
+  grep -qx "sudo update-initramfs -u" "$CALLS"
+  grep -qx "sudo update-alternatives --remove default.plymouth $PLYMOUTH_THEMES/tahoe-logo/tahoe-logo.plymouth" "$CALLS"
+  [ "$(mod_plymouth_status)" = off ]
+}
+
+@test "plymouth remove: no bgrt theme → refused" {
+  setup_mod
+  real_sudo
+  mkdir -p "$PLYMOUTH_THEMES/tahoe-logo"
+  touch "$PLYMOUTH_THEMES/tahoe-logo/tahoe-logo.plymouth"
+  run mod_plymouth_remove
+  [ "$status" -eq "$REFUSED" ]
+  refute grep -q update-initramfs "$CALLS"
+}
+
+@test "plymouth remove: initramfs fails → the kit's splash stays selected and installed" {
+  setup_mod
+  real_sudo
+  setup_plymouth
+  SUDO_FAIL_ON=update-initramfs run mod_plymouth_remove
+  [ "$status" -ne 0 ]
+  [ "$(tail -n1 "$CALLS")" = "sudo update-alternatives --set default.plymouth $PLYMOUTH_THEMES/tahoe-logo/tahoe-logo.plymouth" ]
+  [ "$(mod_plymouth_status)" = on ]
+}
