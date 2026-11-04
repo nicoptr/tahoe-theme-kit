@@ -6,9 +6,10 @@ EXTENSIONS=(
   "hidetopbar@mathieu.bidon.ca 76242 c4bccf4e9517c429d1de88c0263037b4ab73804f7024f2376c2419e186892200"
   "dash-to-dock@micxgx.gmail.com 76105 b05003e79835a35451e94931539ba1977f2a7a93b652a4fc6b7be60a77c18ae1"
   "CoverflowAltTab@palatis.blogspot.com 61982 0d5a430205a88e807d94a41b7849dd4b027219c9df36892d7cbfb3db948d089e"
+  "search-light@icedman.github.com 63847 3f3e486a88bab5f33962efb28e6651b199b1d15ef89275f5756dcd8c3fac4ffc"
 )
 WOBBLY="compiz-windows-effect@hermes83.github.com 67396 744d0f98858dac57bdcff50c399d63a9aea7b1db1c5765a967081cc7802fad0e"
-EXTENSION_SETTINGS=(blur-my-shell rounded-window-corners-reborn hidetopbar appindicator dash-to-dock)
+EXTENSION_SETTINGS=(blur-my-shell rounded-window-corners-reborn hidetopbar appindicator dash-to-dock search-light)
 
 install_extension() {
   local uuid=$1 tag=$2 sha256=$3 zip=$CACHE/downloads/$1.zip
