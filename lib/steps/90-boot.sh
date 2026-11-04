@@ -1,5 +1,5 @@
-YARU_GRESOURCE=/usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource
-PLYMOUTH_THEMES=/usr/share/plymouth/themes
+YARU_GRESOURCE=${YARU_GRESOURCE:-/usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource}
+PLYMOUTH_THEMES=${PLYMOUTH_THEMES:-/usr/share/plymouth/themes}
 
 step_gdm() {
   ask_yes_no "Login screen theme (GDM, dark variant with your dark wallpaper)?" y || return 0

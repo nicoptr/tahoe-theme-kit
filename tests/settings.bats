@@ -67,11 +67,10 @@ setup_settings() {
   grep -qx "sudo apt-get install -y $CACHE/downloads/ulauncher_5.16.2_all.deb" "$CALLS"
 }
 
-@test "settings: ulauncher starts at login with the Ctrl+Super hotkey" {
+@test "settings: Ulauncher's files belong to the launcher, not to settings" {
   setup_settings
   run step_settings
-  grep -q '^Exec=.*ulauncher --hide-window$' "$HOME/.config/autostart/ulauncher.desktop"
-  [ "$(jq -r '."hotkey-show-app"' "$HOME/.config/ulauncher/settings.json")" = '<Primary>Super_L' ]
+  [ ! -e "$HOME/.config/autostart/ulauncher.desktop" ]
 }
 
 @test "settings: a symlinked config file stays a symlink and keeps its mode" {

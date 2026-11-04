@@ -13,7 +13,7 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   [ "$status" -eq 0 ]
   grep -q "^curl .*download-extension/blur-my-shell@aunetx.shell-extension.zip?version_tag=77413" "$CALLS"
   grep -q "^gnome-extensions install --force $CACHE/downloads/blur-my-shell@aunetx.zip" "$CALLS"
-  [ "$(grep -c '^gnome-extensions install' "$CALLS")" -eq 8 ]
+  [ "$(grep -c '^gnome-extensions install' "$CALLS")" -eq 7 ]
 }
 
 @test "extensions: enabled list keeps existing entries and adds each uuid once" {
@@ -58,10 +58,10 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   [[ "$output" == *user-theme@gnome-shell-extensions.gcampax.github.com* ]]
 }
 
-@test "extensions: settings reset then loaded for the 6 extensions" {
+@test "extensions: settings reset then loaded for the 5 extensions" {
   setup_ext
   run step_extensions <<<"y"
-  for p in blur-my-shell rounded-window-corners-reborn hidetopbar appindicator dash-to-dock search-light; do
+  for p in blur-my-shell rounded-window-corners-reborn hidetopbar appindicator dash-to-dock; do
     grep -qx "dconf reset -f /org/gnome/shell/extensions/$p/" "$CALLS"
     grep -qx "dconf load /org/gnome/shell/extensions/$p/" "$CALLS"
   done
@@ -75,16 +75,3 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   refute grep -q '^gnome-extensions install' "$CALLS"
 }
 
-@test "extensions: Search Light opens with Super+Space, taken from the layout switch" {
-  setup_ext
-  run step_extensions <<<"n"
-  grep -qx "shortcut-search=\\['<Super>space'\\]" "$REPO_DIR/dconf/search-light.dconf"
-  grep -qx "gsettings set org.gnome.desktop.wm.keybindings switch-input-source \\['XF86Keyboard'\\]" "$CALLS"
-}
-
-
-@test "extensions: Search Light patched to blur what is behind it" {
-  setup_ext
-  run step_extensions <<<"n"
-  grep -q "^patch -d $HOME/.local/share/gnome-shell/extensions -p0 -i $REPO_DIR/patches/search-light-blur.patch" "$CALLS"
-}

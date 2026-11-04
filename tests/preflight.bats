@@ -29,17 +29,12 @@ load helpers
   [[ "$output" == *root* ]]
 }
 
-@test "wayland and answer n: exit 1" {
+@test "wayland: a note, no question" {
   load_lib
-  XDG_SESSION_TYPE=wayland run step_preflight <<<"n"
-  [ "$status" -eq 1 ]
-}
-
-@test "wayland and answer y: continues" {
-  load_lib
-  XDG_SESSION_TYPE=wayland run step_preflight <<<"y"
+  XDG_SESSION_TYPE=wayland run step_preflight </dev/null
   [ "$status" -eq 0 ]
-  [[ "$output" == *X11* ]]
+  [[ "$output" == *Wayland* ]]
+  [[ "$output" != *"[y/N]"* ]]
 }
 
 @test "success: sudo -v asked exactly once" {

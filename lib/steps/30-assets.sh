@@ -34,9 +34,9 @@ tint_wallpaper() {
 
 step_assets() {
   local light dark logo
-  light=$(ask_image "Light wallpaper" "$(previous_or BG_LIGHT "$(tint_wallpaper day "${WALLPAPER_HUE[0]}")")")
-  dark=$(ask_image "Dark wallpaper (also the login screen)" "$(previous_or BG_DARK "$(tint_wallpaper night "${WALLPAPER_HUE[1]}")")")
-  logo=$(ask_image "Boot splash logo (PNG, transparent background, light on black)" "$(previous_or PLYMOUTH_LOGO "$PLYMOUTH_DEFAULT")")
+  light=$(ask_image "Light wallpaper" "${TAHOE_BG_LIGHT:-$(previous_or BG_LIGHT "$(tint_wallpaper day "${WALLPAPER_HUE[0]}")")}")
+  dark=$(ask_image "Dark wallpaper (also the login screen)" "${TAHOE_BG_DARK:-$(previous_or BG_DARK "$(tint_wallpaper night "${WALLPAPER_HUE[1]}")")}")
+  logo=$(ask_image "Boot splash logo (PNG, transparent background, light on black)" "${TAHOE_LOGO:-$(previous_or PLYMOUTH_LOGO "$PLYMOUTH_DEFAULT")}")
 
   mkdir -p "$RUNTIME/backgrounds"
   light=$(copy_asset "$light" light)
@@ -45,7 +45,7 @@ step_assets() {
 
   {
     cat "$VARIANT_CONF"
-    printf '\nBG_LIGHT=%q\nBG_DARK=%q\nPLYMOUTH_LOGO=%q\n' "$light" "$dark" "$logo"
+    printf '\nVARIANT=%q\nBG_LIGHT=%q\nBG_DARK=%q\nPLYMOUTH_LOGO=%q\n' "$(basename "$VARIANT_CONF" .conf)" "$light" "$dark" "$logo"
   } >"$RUNTIME/tahoe.conf"
   cp "$REPO_DIR"/runtime/* "$REPO_DIR/ghostty/gen-themes.py" "$RUNTIME/"
 }

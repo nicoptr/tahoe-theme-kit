@@ -18,15 +18,8 @@ install_file() {
 }
 
 step_settings() {
-  source "$RUNTIME/tahoe.conf"
-  gsettings set org.gnome.desktop.background picture-uri "$(file_uri "$BG_LIGHT")"
-  gsettings set org.gnome.desktop.background picture-uri-dark "$(file_uri "$BG_DARK")"
-  dconf write /org/gnome/terminal/legacy/theme-variant "'system'"
-
-  local rel
-  while IFS= read -r rel; do
-    install_file "$REPO_DIR/files/$rel" "$HOME/$rel"
-  done < <(cd "$REPO_DIR/files" && find . -type f -printf '%P\n')
+  mod_wallpaper_install
+  install_kit_files "${THEME_FILES[@]}" "${SWITCH_FILES[@]}"
   systemctl --user enable systemd-tmpfiles-setup.service
 }
 

@@ -4,10 +4,8 @@ step_preflight() {
     die "This installer supports Ubuntu 24.04 only."
   fi
 
-  if [[ ${XDG_SESSION_TYPE:-} == wayland ]]; then
-    warn "Wayland session: the kit is tested on X11. Nautilus window restore and some extensions may misbehave."
-    ask_yes_no "Continue anyway? (X11 recommended: pick 'Ubuntu on Xorg' at login)" n || die "Stopped."
-  fi
+  [[ ${XDG_SESSION_TYPE:-} != wayland ]] ||
+    log "Wayland session: everything works; only the wobbly windows shadow can stay behind as a square."
 
   log "sudo is needed for apt, snap, the login screen and the boot splash."
   sudo -v

@@ -6,10 +6,18 @@ EXTENSIONS=(
   "hidetopbar@mathieu.bidon.ca 76242 c4bccf4e9517c429d1de88c0263037b4ab73804f7024f2376c2419e186892200"
   "dash-to-dock@micxgx.gmail.com 76105 b05003e79835a35451e94931539ba1977f2a7a93b652a4fc6b7be60a77c18ae1"
   "CoverflowAltTab@palatis.blogspot.com 61982 0d5a430205a88e807d94a41b7849dd4b027219c9df36892d7cbfb3db948d089e"
-  "search-light@icedman.github.com 63847 3f3e486a88bab5f33962efb28e6651b199b1d15ef89275f5756dcd8c3fac4ffc"
 )
 WOBBLY="compiz-windows-effect@hermes83.github.com 67396 744d0f98858dac57bdcff50c399d63a9aea7b1db1c5765a967081cc7802fad0e"
-EXTENSION_SETTINGS=(blur-my-shell rounded-window-corners-reborn hidetopbar appindicator dash-to-dock search-light)
+SEARCH_LIGHT="search-light@icedman.github.com 63847 3f3e486a88bab5f33962efb28e6651b199b1d15ef89275f5756dcd8c3fac4ffc"
+EXTENSION_SETTINGS=(blur-my-shell rounded-window-corners-reborn hidetopbar appindicator dash-to-dock)
+
+extension_entry() {
+  local entry
+  for entry in "${EXTENSIONS[@]}" "$WOBBLY" "$SEARCH_LIGHT"; do
+    [[ $entry == "$1 "* ]] && { echo "$entry"; return 0; }
+  done
+  die "Unknown extension $1"
+}
 
 install_extension() {
   local uuid=$1 tag=$2 sha256=$3 zip=$CACHE/downloads/$1.zip
@@ -18,17 +26,32 @@ install_extension() {
   gnome-extensions install --force "$zip"
 }
 
-enable_extensions() {
-  local current
-  current=$(gsettings get org.gnome.shell enabled-extensions)
-  gsettings set org.gnome.shell enabled-extensions "$(python3 -I -c '
+# $1 schema, $2 key of a string list, $3 add|remove, then the items
+edit_list() {
+  local schema=$1 key=$2
+  gsettings set "$schema" "$key" "$(python3 -I -c '
 import ast, sys
-enabled = ast.literal_eval(sys.argv[1].removeprefix("@as "))
-print(enabled + [u for u in sys.argv[2:] if u not in enabled])' "$current" "$@")"
+items = ast.literal_eval(sys.argv[1].removeprefix("@as "))
+op, changes = sys.argv[2], sys.argv[3:]
+if op == "add":
+    items += [c for c in changes if c not in items]
+else:
+    items = [i for i in items if i not in changes]
+print(items)' "$(gsettings get "$schema" "$key")" "${@:3}")"
+}
+
+enable_extensions() { edit_list org.gnome.shell enabled-extensions add "$@"; }
+
+load_extension_settings() {
+  local p
+  for p; do
+    dconf reset -f "/org/gnome/shell/extensions/$p/"
+    dconf load "/org/gnome/shell/extensions/$p/" <"$REPO_DIR/dconf/$p.dconf"
+  done
 }
 
 step_extensions() {
-  local selected=("${EXTENSIONS[@]}") wobbly=false entry uuid tag sha256 uuids=() p
+  local selected=("${EXTENSIONS[@]}") wobbly=false entry uuid tag sha256 uuids=()
   ask_yes_no "Wobbly windows (Compiz windows effect)?" y && wobbly=true
   $wobbly && selected+=("$WOBBLY")
 
@@ -41,14 +64,7 @@ step_extensions() {
   if $wobbly; then
     patch -d "$HOME/.local/share/gnome-shell/extensions" -p0 -i "$REPO_DIR/patches/compiz-windows-effect-rwc-shadow.patch"
   fi
-  patch -d "$HOME/.local/share/gnome-shell/extensions" -p0 -i "$REPO_DIR/patches/search-light-blur.patch"
   enable_extensions "${uuids[@]}"
 
-  for p in "${EXTENSION_SETTINGS[@]}"; do
-    dconf reset -f "/org/gnome/shell/extensions/$p/"
-    dconf load "/org/gnome/shell/extensions/$p/" <"$REPO_DIR/dconf/$p.dconf"
-  done
-  # Super+Space belongs to Search Light; the layout switch keeps the keyboard's own key
-  gsettings set org.gnome.desktop.wm.keybindings switch-input-source "['XF86Keyboard']"
-  gsettings set org.gnome.desktop.wm.keybindings switch-input-source-backward "['<Shift>XF86Keyboard']"
+  load_extension_settings "${EXTENSION_SETTINGS[@]}"
 }

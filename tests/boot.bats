@@ -15,7 +15,7 @@ setup_boot() {
   [ "$status" -eq 0 ]
   identify "$CACHE/gdm-background.png"
   grep -qx "sudo ./tweaks.sh -g -b $CACHE/gdm-background.png -nb -nd -p 45 -h smaller -t purple" "$CALLS"
-  grep -qx "sudo update-alternatives --set gdm-theme.gresource /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource" "$CALLS"
+  grep -qx "sudo update-alternatives --set gdm-theme.gresource $YARU_GRESOURCE" "$CALLS"
 }
 
 @test "plymouth: theme file gets the accent as 0x color" {
@@ -28,7 +28,7 @@ setup_boot() {
   setup_boot
   run step_plymouth <<<"y"
   [ "$status" -eq 0 ]
-  grep -qx "sudo update-alternatives --set default.plymouth /usr/share/plymouth/themes/tahoe-logo/tahoe-logo.plymouth" "$CALLS"
+  grep -qx "sudo update-alternatives --set default.plymouth $PLYMOUTH_THEMES/tahoe-logo/tahoe-logo.plymouth" "$CALLS"
   grep -qx "sudo update-initramfs -u" "$CALLS"
 }
 
