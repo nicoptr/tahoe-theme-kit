@@ -76,10 +76,15 @@ run_module() {
     echo "@@ok $id"
     return 0
   fi
-  if ((STRICT_RC != REFUSED)); then
+  if ((STRICT_RC == REFUSED)); then
+    echo "@@refused $id"
+  else
     log "Rolling back $id"
     run_strict module_action "$id" "$undo" "${4:-}"
-    ((STRICT_RC == 0)) || warn "Rollback of $id failed too: check it by hand."
+    if ((STRICT_RC != 0)); then
+      warn "Rollback of $id failed too: check it by hand."
+      echo "@@rollback-failed $id"
+    fi
   fi
   echo "@@fail $id"
   MODULE_FAILED=$id
@@ -145,6 +150,9 @@ engine_apply() {
     ((STRICT_RC == 0)) || { echo "@@fail prepare"; return 1; }
     echo "@@ok prepare"
   fi
+  # prepare ran in a subshell: the modules (and their rollbacks) read the variant and images from here
+  # shellcheck disable=SC1091
+  [[ ! -f $RUNTIME/tahoe.conf ]] || source "$RUNTIME/tahoe.conf"
 
   local i
   for ((i = ${#removes[@]} - 1; i >= 0; i--)); do

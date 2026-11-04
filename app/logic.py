@@ -7,6 +7,7 @@ import re
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PREVIEWS = os.path.join(REPO_DIR, "app", "previews")
 ENGINE = os.path.join(REPO_DIR, "tahoe-engine")
+APPLY_LOG = os.path.join(os.path.expanduser("~"), ".local", "share", "tahoe-theme-kit", "last-apply.log")
 IMAGE_FLAGS = {"bg_light": "--bg-light", "bg_dark": "--bg-dark", "logo": "--logo"}
 # keep in sync with engine_apply in lib/engine.sh
 IMPLIED_OFF = {"theme": ["switch"]}
@@ -67,5 +68,25 @@ def apply_args(current, wanted, variant, images):
 
 
 def parse_progress(line):
-    m = re.fullmatch(r"@@(start|ok|fail) (\S+)(?: (\S+))?", line.strip())
+    m = re.fullmatch(r"@@(start|ok|fail|refused|rollback-failed) (\S+)(?: (\S+))?", line.strip())
     return (m.group(1), m.group(2), m.group(3)) if m else None
+
+
+def engine_argv(args):
+    # its own session: closing or killing the app must not stop a step halfway
+    return ["setsid", ENGINE] + args
+
+
+def result_message(ok, events, title=lambda m: m):
+    """events: (kind, module) pairs from parse_progress, in order."""
+    if ok:
+        return "Done. Log out and back in so GNOME loads every change."
+    kinds = {kind: module for kind, module in events}
+    if "rollback-failed" in kinds:
+        return (f"Stopped at {title(kinds['rollback-failed'])}, and putting it back failed too: "
+                f"check it by hand (log: {APPLY_LOG}).")
+    if "refused" in kinds:
+        return f"Stopped at {title(kinds['refused'])} before it changed anything: nothing was changed there. See the log."
+    if "fail" in kinds:
+        return f"Stopped at {title(kinds['fail'])}. That module was put back as it was; see the log."
+    return f"Stopped; see the log ({APPLY_LOG})."

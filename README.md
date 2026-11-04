@@ -42,7 +42,7 @@ When it ends:
 
 Turning a module off uninstalls it and puts that part of the system back to **Ubuntu's defaults**: the dock goes back to Ubuntu's, GNOME Terminal is the default again, Yaru comes back, and so on. A config file the kit replaced gets your `*.bak-tahoe` copy back. Settings you changed by hand *before* the kit are not remembered: you get Ubuntu's, not yours. The shared tools the kit needs (`git`, `jq`, `imagemagick`…) are never removed.
 
-The modules that touch the system (GTK4, the login screen, the boot splash) check that Ubuntu's version is there before removing the kit's, and check the result afterwards. If a module fails, the app stops, puts that module back as it was, and leaves the ones before it done.
+The modules that touch the system (GTK4, the login screen, the boot splash) check that Ubuntu's version is there before removing the kit's, and check the result afterwards. If a module fails, the app stops, tries to put that module back as it was, leaves the ones before it done, and says plainly when putting it back failed too. The log of the last run is in `~/.local/share/tahoe-theme-kit/last-apply.log`.
 
 The app needs nothing new: Python, GTK4 and libadwaita come with Ubuntu. Underneath it runs `./tahoe-engine`, which you can also use from a script:
 

@@ -6,6 +6,7 @@ setup_runtime() {
   cp "$REPO_DIR/runtime/tahoe-mode.sh" "$RT/"
   cat "$REPO_DIR/variants/amethyst.conf" >"$RT/tahoe.conf"
   export STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10+livecss1
+  mkdir -p "$HOME/.themes/MacTahoe-Dark-purple" "$HOME/.themes/MacTahoe-Light-purple"
 }
 
 @test "dark: gtk4 symlink and gtk theme switch to dark" {
@@ -50,4 +51,19 @@ setup_runtime() {
   grep -qx "dconf write /org/gnome/shell/extensions/search-light/background-color (0.141, 0.141, 0.141, 0.5)" "$CALLS"
   run "$RT/tahoe-mode.sh" light
   grep -qx "dconf write /org/gnome/shell/extensions/search-light/background-color (0.961, 0.961, 0.961, 0.5)" "$CALLS"
+}
+
+@test "Search Light text is opaque in light mode" {
+  setup_runtime
+  mkdir -p "$HOME/.themes/MacTahoe-Light-purple"
+  run "$RT/tahoe-mode.sh" light
+  grep -qx "dconf write /org/gnome/shell/extensions/search-light/text-color (0.141, 0.141, 0.141, 1.0)" "$CALLS"
+}
+
+@test "theme gone: the switch does nothing" {
+  setup_runtime
+  rm -rf "$HOME/.themes"
+  run "$RT/tahoe-mode.sh" dark
+  [ "$status" -eq 0 ]
+  refute grep -q "gtk-theme" "$CALLS"
 }

@@ -11,6 +11,8 @@ KIT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$KIT_DIR/tahoe.conf"
 
 THEME="MacTahoe-$MODE-$ACCENT"
+# the theme was turned off: nothing to switch
+[[ -d $HOME/.themes/$THEME ]] || exit 0
 ICONS="$ICON_THEME-${1}"
 GTK4_DIR="$HOME/.config/gtk-4.0"
 USER_THEME_SCHEMAS="$HOME/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas"
@@ -197,7 +199,7 @@ if [[ $MODE == Dark ]]; then
   dconf write $SEARCH_LIGHT/text-color '(0.871, 0.871, 0.871, 1.0)'
   dconf write $SEARCH_LIGHT/background-color '(0.141, 0.141, 0.141, 0.5)'
 else
-  dconf write $SEARCH_LIGHT/text-color '(0.141, 0.141, 0.141, 0.5)'
+  dconf write $SEARCH_LIGHT/text-color '(0.141, 0.141, 0.141, 1.0)'
   dconf write $SEARCH_LIGHT/background-color '(0.961, 0.961, 0.961, 0.5)'
 fi
 

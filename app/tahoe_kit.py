@@ -413,6 +413,9 @@ class KitWindow(Adw.ApplicationWindow):
         dialog.present(self)
 
     def _check_password_and_run(self, password):
+        self.running = True
+        self._refresh()
+
         def check():
             ok = sudo_password_ok(password)
             GLib.idle_add(self._run_engine if ok else self._wrong_password, password)
@@ -420,14 +423,14 @@ class KitWindow(Adw.ApplicationWindow):
         threading.Thread(target=check, daemon=True).start()
 
     def _wrong_password(self, _password):
-        self.toasts.add_toast(Adw.Toast(title="Wrong password"))
+        self.running = False
+        self._refresh()
+        self.toasts.add_toast(Adw.Toast(title="Wrong password, or this user can't use sudo"))
 
     def _run_engine(self, password):
         args = logic.apply_args(self.current, self.wanted, self.wanted_variant, self.images)
         planned = [m for m, _ in logic.plan(self.current, self.wanted)]
         self.askpass = AskpassServer(password)
-        self.running = True
-        self._refresh()
 
         win = Adw.Window(transient_for=self, modal=True, default_width=720, default_height=520, title="Applying")
         win.connect("close-request", lambda *_: self.running)
@@ -447,21 +450,26 @@ class KitWindow(Adw.ApplicationWindow):
         view.add_top_bar(Adw.HeaderBar())
         win.set_content(view)
         win.present()
-        self.failed = None
+        self.events = []
 
-        launcher = Gio.SubprocessLauncher.new(Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_MERGE)
+        # the engine writes to a file, not to a pipe of ours: if the app dies, the engine doesn't
+        os.makedirs(os.path.dirname(logic.APPLY_LOG), exist_ok=True)
+        open(logic.APPLY_LOG, "w").close()
+        launcher = Gio.SubprocessLauncher.new(Gio.SubprocessFlags.STDERR_MERGE)
+        launcher.set_stdout_file_path(logic.APPLY_LOG)
         launcher.setenv("SUDO_ASKPASS", ASKPASS, True)
         launcher.setenv("TAHOE_ASKPASS_SOCK", self.askpass.path, True)
-        proc = launcher.spawnv([logic.ENGINE] + args)
-        stream = Gio.DataInputStream.new(proc.get_stdout_pipe())
-        stream.read_line_async(GLib.PRIORITY_DEFAULT, None, self._on_line, (proc, stream))
+        proc = launcher.spawnv(logic.engine_argv(args))
+        self.log_file = open(logic.APPLY_LOG)
+        self.follow = GLib.timeout_add(200, self._read_log)
+        proc.wait_check_async(None, self._on_done)
 
-    def _on_line(self, stream, result, data):
-        proc, _ = data
-        line, _length = stream.read_line_finish_utf8(result)
-        if line is None:
-            proc.wait_check_async(None, self._on_done)
-            return
+    def _read_log(self):
+        for line in self.log_file.readlines():
+            self._on_line(line.rstrip("\n"))
+        return GLib.SOURCE_CONTINUE
+
+    def _on_line(self, line):
         buffer = self.log.get_buffer()
         buffer.insert(buffer.get_end_iter(), line + "\n")
         self.log.scroll_to_mark(buffer.get_insert(), 0, False, 0, 0)
@@ -475,27 +483,25 @@ class KitWindow(Adw.ApplicationWindow):
                 self.progress_done += 1
                 self.progress.set_fraction(self.progress_done / self.progress_total)
             else:
-                self.failed = title
-        stream.read_line_async(GLib.PRIORITY_DEFAULT, None, self._on_line, data)
+                self.events.append((kind, module_id))
 
     def _on_done(self, proc, result):
         try:
             ok = proc.wait_check_finish(result)
         except GLib.Error:
             ok = False
+        GLib.source_remove(self.follow)
+        self._read_log()
+        self.log_file.close()
         self.askpass.close()
         self.running = False
         self.close_button.set_sensitive(True)
+        message = logic.result_message(ok, self.events, lambda m: self.meta.get(m, {}).get("title", m))
         if ok:
             self.progress.set_fraction(1)
-            self.progress_label.set_label("Done. Log out and back in so GNOME loads every change.")
             installed = [m for m, a in logic.plan(self.current, self.wanted) if a == "install"]
-            for m in installed:
-                if self.meta[m].get("after_note"):
-                    self.progress_label.set_label(self.progress_label.get_label() + "\n" + self.meta[m]["after_note"])
-        else:
-            where = f" at {self.failed}" if self.failed else ""
-            self.progress_label.set_label(f"Stopped{where}. That module was put back as it was; see the log below.")
+            message += "".join("\n" + self.meta[m]["after_note"] for m in installed if self.meta[m].get("after_note"))
+        self.progress_label.set_label(message)
         self.images = {}
         self._load_status()
         self._refresh()

@@ -276,3 +276,30 @@ setup_plymouth() {
   [ "$(tail -n1 "$CALLS")" = "sudo update-alternatives --set default.plymouth $PLYMOUTH_THEMES/tahoe-logo/tahoe-logo.plymouth" ]
   [ "$(mod_plymouth_status)" = on ]
 }
+
+@test "launcher none on an old install with both launchers: both go" {
+  setup_mod
+  mkdir -p "$HOME/$EXT/search-light@icedman.github.com"
+  STUB_OUT_DPKG_QUERY='install ok installed' run mod_launcher_set none
+  [ "$status" -eq 0 ]
+  grep -qx "gnome-extensions uninstall search-light@icedman.github.com" "$CALLS"
+  grep -qx 'sudo apt-get remove -y ulauncher' "$CALLS"
+}
+
+@test "switch remove: the running Switchcraft is stopped first" {
+  setup_mod
+  run mod_switch_remove
+  [ "$(head -n1 "$CALLS")" = "pkill -x switchcraft" ]
+}
+
+@test "restore_or_delete: a symlinked dotfile keeps its link and gets the user's content back" {
+  setup_mod
+  mkdir -p "$HOME/dotfiles" "$HOME/.config/gtk-3.0"
+  echo kit >"$HOME/dotfiles/gtk.css"
+  ln -s "$HOME/dotfiles/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
+  echo mine >"$HOME/.config/gtk-3.0/gtk.css.bak-tahoe"
+  restore_or_delete "$HOME/.config/gtk-3.0/gtk.css"
+  [ -L "$HOME/.config/gtk-3.0/gtk.css" ]
+  [ "$(cat "$HOME/dotfiles/gtk.css")" = mine ]
+  [ ! -e "$HOME/.config/gtk-3.0/gtk.css.bak-tahoe" ]
+}

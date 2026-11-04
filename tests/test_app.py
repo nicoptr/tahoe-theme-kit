@@ -45,6 +45,22 @@ class ProgressTest(unittest.TestCase):
         self.assertIsNone(logic.parse_progress("Reading package lists..."))
 
 
+class ResultTest(unittest.TestCase):
+    def test_parse_new_events(self):
+        self.assertEqual(logic.parse_progress("@@refused gtk4"), ("refused", "gtk4", None))
+        self.assertEqual(logic.parse_progress("@@rollback-failed gdm"), ("rollback-failed", "gdm", None))
+
+    def test_messages_follow_what_happened(self):
+        self.assertIn("Done", logic.result_message(True, []))
+        self.assertIn("nothing was changed", logic.result_message(False, [("fail", "gtk4"), ("refused", "gtk4")]))
+        self.assertIn("put back", logic.result_message(False, [("fail", "dock")]))
+        self.assertIn("by hand", logic.result_message(False, [("fail", "gdm"), ("rollback-failed", "gdm")]))
+        self.assertNotIn("put back", logic.result_message(False, []))
+
+    def test_engine_runs_in_its_own_session(self):
+        self.assertEqual(logic.engine_argv(["apply", "dock=on"]), ["setsid", logic.ENGINE, "apply", "dock=on"])
+
+
 class ModulesFileTest(unittest.TestCase):
     def test_every_engine_module_has_metadata_and_previews(self):
         meta = logic.load_modules()
@@ -106,4 +122,8 @@ class WindowSmokeTest(unittest.TestCase):
         self.assertFalse(win.controls["gtk4"].get_sensitive())
         win.controls["switch"].set_active(True)
         self.assertEqual(win.wanted["theme"], "on")
+        tahoe_kit.sudo_password_ok = lambda _pw: False
+        win._check_password_and_run("x")
+        self.assertTrue(win.running)
+        self.assertFalse(win.apply_button.get_sensitive())
         win.destroy()

@@ -130,3 +130,39 @@ assert (s["variant"], s["bg_light"], s["bg_dark"], s["logo"]) == ("topaz", "/a.p
   sudo true
   grep -qx 'sudo true' "$CALLS"
 }
+
+@test "engine: a refused remove says so with @@refused" {
+  setup_engine
+  echo on >"$FAKE_STATE/gtk4"
+  mod_gtk4_remove() { return "$REFUSED"; }
+  run engine_apply gtk4=off
+  grep -qx '@@refused gtk4' <<<"$output"
+}
+
+@test "engine: a rollback that fails too says so with @@rollback-failed" {
+  setup_engine
+  mod_corners_install() { return 1; }
+  mod_corners_remove() { return 1; }
+  run engine_apply --variant amethyst corners=on
+  grep -qx '@@rollback-failed corners' <<<"$output"
+}
+
+@test "engine: a remove-only apply still has the variant loaded for the rollback" {
+  setup_engine
+  mkdir -p "$RUNTIME"
+  printf 'VARIANT=amethyst\nACCENT=purple\n' >"$RUNTIME/tahoe.conf"
+  echo on >"$FAKE_STATE/theme"
+  mod_theme_remove() { return 1; }
+  mod_theme_install() { echo "rollback accent ${ACCENT:-missing}" >>"$CALLS"; }
+  run engine_apply theme=off
+  grep -qx 'rollback accent purple' "$CALLS"
+}
+
+@test "engine: modules see the variant that prepare wrote" {
+  setup_engine
+  engine_prepare() { mkdir -p "$RUNTIME"; printf 'VARIANT=topaz\nACCENT=yellow\n' >"$RUNTIME/tahoe.conf"; }
+  mod_dock_install() { echo "install accent ${ACCENT:-missing}" >>"$CALLS"; }
+  run engine_apply --variant topaz dock=on
+  [ "$status" -eq 0 ]
+  grep -qx 'install accent yellow' "$CALLS"
+}

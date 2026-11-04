@@ -22,7 +22,11 @@ on_off() { if "$@"; then echo on; else echo off; fi; }
 pkg_installed() { [[ "$(dpkg-query -W -f='${Status}' "$1" 2>/dev/null)" == 'install ok installed' ]]; }
 
 restore_or_delete() {
-  if [[ -e $1.bak-tahoe ]]; then
+  # install_file wrote through a symlinked dotfile: put the content back the same way
+  if [[ -e $1.bak-tahoe && -L $1 ]]; then
+    cat "$1.bak-tahoe" >"$1"
+    rm -f "$1.bak-tahoe"
+  elif [[ -e $1.bak-tahoe ]]; then
     mv -f "$1.bak-tahoe" "$1"
   else
     rm -f "$1"
@@ -179,11 +183,11 @@ mod_launcher_status() {
   fi
 }
 
+# installs from before the app can have both launchers: each is checked on its own
 mod_launcher_set() {
-  local want=$1 current
-  current=$(mod_launcher_status)
-  if [[ $current == searchlight && $want != searchlight ]]; then drop_extension "$SEARCH_LIGHT_UUID" search-light; fi
-  if [[ $current == ulauncher && $want != ulauncher ]]; then remove_ulauncher; fi
+  local want=$1
+  if extension_installed "$SEARCH_LIGHT_UUID" && [[ $want != searchlight ]]; then drop_extension "$SEARCH_LIGHT_UUID" search-light; fi
+  if pkg_installed ulauncher && [[ $want != ulauncher ]]; then remove_ulauncher; fi
   case $want in
     searchlight) install_search_light ;;
     ulauncher) install_ulauncher ;;
@@ -202,6 +206,8 @@ mod_switch_install() {
   install_kit_files "${SWITCH_FILES[@]}"
 }
 mod_switch_remove() {
+  # a running Switchcraft keeps calling tahoe-mode.sh until logout
+  pkill -x switchcraft || true
   sudo apt-get remove -y switchcraft
   remove_kit_files "${SWITCH_FILES[@]}"
 }
