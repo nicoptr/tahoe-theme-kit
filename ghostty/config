@@ -19,7 +19,7 @@ gtk-single-instance = false
 
 cursor-style = block
 cursor-style-blink = true
-shell-integration-features = no-cursor,sudo,title
+shell-integration-features = no-cursor,sudo,title,ssh-env
 mouse-hide-while-typing = true
 
 bell-features = attention,title
