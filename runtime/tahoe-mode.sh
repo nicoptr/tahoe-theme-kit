@@ -192,6 +192,17 @@ BLUR_PIPELINE="'$([[ $MODE == Dark ]] && echo pipeline_default || echo pipeline_
 dconf write /org/gnome/shell/extensions/blur-my-shell/popup/pipeline "$BLUR_PIPELINE"
 dconf write /org/gnome/shell/extensions/blur-my-shell/panel/pipeline "$BLUR_PIPELINE"
 
+SEARCH_LIGHT=/org/gnome/shell/extensions/search-light
+if [[ $MODE == Dark ]]; then
+  dconf write $SEARCH_LIGHT/background-color '(0.141, 0.141, 0.141, 0.96)'
+  dconf write $SEARCH_LIGHT/text-color '(0.871, 0.871, 0.871, 1.0)'
+  dconf write $SEARCH_LIGHT/border-color '(0.0, 0.0, 0.0, 0.75)'
+else
+  dconf write $SEARCH_LIGHT/background-color '(0.961, 0.961, 0.961, 0.96)'
+  dconf write $SEARCH_LIGHT/text-color '(0.141, 0.141, 0.141, 1.0)'
+  dconf write $SEARCH_LIGHT/border-color '(0.0, 0.0, 0.0, 0.0)'
+fi
+
 gtk4_reloads_user_css() {
   [[ "$(dpkg-query -W -f='${Version}' libgtk-4-1 2>/dev/null)" == *+livecss* ]]
 }

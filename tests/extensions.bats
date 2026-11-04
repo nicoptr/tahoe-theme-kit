@@ -75,6 +75,9 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   refute grep -q '^gnome-extensions install' "$CALLS"
 }
 
-@test "extensions: Search Light opens with Ctrl+Space" {
-  grep -qx "shortcut-search=\\['<Control>space'\\]" "$REPO_DIR/dconf/search-light.dconf"
+@test "extensions: Search Light opens with Super+Space, taken from the layout switch" {
+  setup_ext
+  run step_extensions <<<"n"
+  grep -qx "shortcut-search=\\['<Super>space'\\]" "$REPO_DIR/dconf/search-light.dconf"
+  grep -qx "gsettings set org.gnome.desktop.wm.keybindings switch-input-source \\['XF86Keyboard'\\]" "$CALLS"
 }

@@ -1,2 +1,5 @@
 [/]
-shortcut-search=['<Control>space']
+shortcut-search=['<Super>space']
+blur-background=false
+border-radius=1.0
+border-thickness=1

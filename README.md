@@ -43,7 +43,7 @@ When it ends:
 | assets | asks for the light wallpaper, the dark wallpaper (defaults: MacTahoe's, recolored to the variant) and the boot logo, then writes `~/.local/share/tahoe-theme-kit/tahoe.conf` | delete the folder |
 | theme | MacTahoe GTK + shell theme (`-l -HD --shell -p 45 -h smaller --round`) plus the kit's shell fixes | `MacTahoe-gtk-theme/install.sh -r` |
 | icons | MacTahoe icons and cursors | `MacTahoe-icon-theme/install.sh -r` |
-| extensions | User Themes, Blur my Shell, Rounded Window Corners Reborn, Hide Top Bar, Dash to Dock (floating, bottom), Coverflow Alt-Tab, Search Light (Spotlight-style search, Ctrl+Space); optional wobbly windows (Compiz windows effect, patched) | Extension Manager |
+| extensions | User Themes, Blur my Shell, Rounded Window Corners Reborn, Hide Top Bar, Dash to Dock (floating, bottom), Coverflow Alt-Tab, Search Light (Spotlight-style search, Super+Space; the keyboard layout switch moves to the keyboard key); optional wobbly windows (Compiz windows effect, patched) | Extension Manager |
 | settings | wallpapers, cursor, terminal follows the system, thin terminal scrollbar, Switchcraft commands | GNOME Settings |
 | switchcraft | [Switchcraft](https://github.com/kem-a/switchcraft) 1.2.1, which watches the Dark Style button | `apt remove switchcraft` |
 | ulauncher | [Ulauncher](https://ulauncher.io) 5.16.2, opens with Ctrl+Super, starts at login | `apt remove ulauncher` |
@@ -61,7 +61,7 @@ Dark Style button → gsettings color-scheme changes
                   → ~/.local/share/tahoe-theme-kit/tahoe-mode.sh dark|light
 ```
 
-`tahoe-mode.sh` switches the GTK and shell theme, the icons, the GTK4 CSS symlink, GNOME Terminal colors, Ulauncher and the Blur my Shell brightness. GNOME switches the wallpaper by itself. Ghostty switches by itself and tells running programs (mode 2031), so Claude Code with `"theme": "auto"` follows too.
+`tahoe-mode.sh` switches the GTK and shell theme, the icons, the GTK4 CSS symlink, GNOME Terminal colors, Ulauncher, Search Light and the Blur my Shell brightness. GNOME switches the wallpaper by itself. Ghostty switches by itself and tells running programs (mode 2031), so Claude Code with `"theme": "auto"` follows too.
 
 ### GTK4
 

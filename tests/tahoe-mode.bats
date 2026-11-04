@@ -43,3 +43,11 @@ setup_runtime() {
   grep -qx 'background = #1d1a24' "$HOME/.config/ghostty/themes/tahoe-dark"
   grep -qx 'palette = 15=#f5f1fa' "$HOME/.config/ghostty/themes/tahoe-dark"
 }
+
+@test "Search Light follows the mode" {
+  setup_runtime
+  run "$RT/tahoe-mode.sh" dark
+  grep -qx "dconf write /org/gnome/shell/extensions/search-light/background-color (0.141, 0.141, 0.141, 0.96)" "$CALLS"
+  run "$RT/tahoe-mode.sh" light
+  grep -qx "dconf write /org/gnome/shell/extensions/search-light/background-color (0.961, 0.961, 0.961, 0.96)" "$CALLS"
+}

@@ -47,4 +47,7 @@ step_extensions() {
     dconf reset -f "/org/gnome/shell/extensions/$p/"
     dconf load "/org/gnome/shell/extensions/$p/" <"$REPO_DIR/dconf/$p.dconf"
   done
+  # Super+Space belongs to Search Light; the layout switch keeps the keyboard's own key
+  gsettings set org.gnome.desktop.wm.keybindings switch-input-source "['XF86Keyboard']"
+  gsettings set org.gnome.desktop.wm.keybindings switch-input-source-backward "['<Shift>XF86Keyboard']"
 }
