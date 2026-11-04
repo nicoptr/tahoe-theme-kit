@@ -1,5 +1,4 @@
 [/]
 shortcut-search=['<Super>space']
-blur-background=false
+blur-background=true
 border-radius=1.0
-border-thickness=1
