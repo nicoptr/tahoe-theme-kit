@@ -96,6 +96,7 @@ These don't follow the system and have to be switched by hand: Brave, Firefox, T
 - **Missing shadows in libadwaita apps:** MacTahoe writes `RGB(0 0 0/15%)`, which GTK 4.14 drops. The installer rewrites it as `rgba()`.
 - **Reload the shell theme without logging out:** write `''` and then the theme name to `/org/gnome/shell/extensions/user-theme/name`.
 - **Don't use MacTahoe's `gnome-theme-switcher`:** it deletes `~/.config/gtk-4.0`.
+- **Search Light blur:** its own "blur" is a blurred copy of the light wallpaper, so it shows the desktop instead of the windows behind it. `patches/search-light-blur.patch` adds GNOME's background blur (and drops the forced offscreen redirect, which hides it) and sets `version` to 9999 against auto-updates. The tint (`background-color`, 50%) is set by `tahoe-mode.sh`.
 - **Wobbly windows:** without the patch, the Rounded Window Corners shadow stays still and square while the window wobbles. `patches/compiz-windows-effect-rwc-shadow.patch` warps the shadow with the window's own model. It also sets `version` to 9999 in `metadata.json`, so GNOME doesn't auto-update the extension and drop the patch.
 
 ### NVIDIA

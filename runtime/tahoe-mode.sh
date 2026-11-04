@@ -195,10 +195,10 @@ dconf write /org/gnome/shell/extensions/blur-my-shell/panel/pipeline "$BLUR_PIPE
 SEARCH_LIGHT=/org/gnome/shell/extensions/search-light
 if [[ $MODE == Dark ]]; then
   dconf write $SEARCH_LIGHT/text-color '(0.871, 0.871, 0.871, 1.0)'
-  dconf write $SEARCH_LIGHT/background-color '(0.141, 0.141, 0.141, 0.85)'
+  dconf write $SEARCH_LIGHT/background-color '(0.141, 0.141, 0.141, 0.5)'
 else
-  dconf write $SEARCH_LIGHT/text-color '(0.141, 0.141, 0.141, 0.85)'
-  dconf write $SEARCH_LIGHT/background-color '(0.961, 0.961, 0.961, 0.85)'
+  dconf write $SEARCH_LIGHT/text-color '(0.141, 0.141, 0.141, 0.5)'
+  dconf write $SEARCH_LIGHT/background-color '(0.961, 0.961, 0.961, 0.5)'
 fi
 
 gtk4_reloads_user_css() {

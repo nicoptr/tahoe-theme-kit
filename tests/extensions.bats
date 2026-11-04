@@ -36,7 +36,7 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   setup_ext
   run step_extensions <<<"n"
   refute grep -q compiz-windows-effect "$CALLS"
-  refute grep -q '^patch' "$CALLS"
+  refute grep -q '^patch.*compiz' "$CALLS"
 }
 
 @test "extensions: wobbly windows → patched after install" {
@@ -82,3 +82,9 @@ enabled_value() { grep '^gsettings set org.gnome.shell enabled-extensions' "$CAL
   grep -qx "gsettings set org.gnome.desktop.wm.keybindings switch-input-source \\['XF86Keyboard'\\]" "$CALLS"
 }
 
+
+@test "extensions: Search Light patched to blur what is behind it" {
+  setup_ext
+  run step_extensions <<<"n"
+  grep -q "^patch -d $HOME/.local/share/gnome-shell/extensions -p0 -i $REPO_DIR/patches/search-light-blur.patch" "$CALLS"
+}

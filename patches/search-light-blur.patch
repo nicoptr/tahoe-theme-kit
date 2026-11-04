@@ -1,0 +1,30 @@
+diff -ru ../search-light@icedman.github.com/extension.js search-light@icedman.github.com/extension.js
+--- search-light@icedman.github.com/extension.js	2026-11-04 17:46:46.507534288 +0100
++++ search-light@icedman.github.com/extension.js	2026-11-04 17:46:46.509534316 +0100
+@@ -49,7 +49,6 @@
+     _init() {
+       super._init();
+       this.name = 'searchLight';
+-      this.offscreen_redirect = Clutter.OffscreenRedirect.ALWAYS;
+       this.layout_manager = new Clutter.BinLayout();
+     }
+   },
+@@ -136,6 +135,7 @@
+ 
+     this.mainContainer = new SearchLight();
+     this.mainContainer._delegate = this;
++    this.mainContainer.add_effect_with_name('tahoe-blur', new Shell.BlurEffect({ mode: Shell.BlurMode.BACKGROUND, radius: 30, brightness: 1 }));
+     this.container = new St.BoxLayout({
+       name: 'searchLightBox',
+       vertical: true,
+diff -ru ../search-light@icedman.github.com/metadata.json search-light@icedman.github.com/metadata.json
+--- search-light@icedman.github.com/metadata.json	2026-11-04 17:46:46.508534302 +0100
++++ search-light@icedman.github.com/metadata.json	2026-11-04 17:46:46.510534330 +0100
+@@ -11,5 +11,5 @@
+   ],
+   "url": "https://github.com/icedman/search-light",
+   "uuid": "search-light@icedman.github.com",
+-  "version": 37
++  "version": 9999
+ }
+\ No newline at end of file

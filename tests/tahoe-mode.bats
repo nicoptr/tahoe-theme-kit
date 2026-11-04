@@ -47,7 +47,7 @@ setup_runtime() {
 @test "Search Light follows the mode" {
   setup_runtime
   run "$RT/tahoe-mode.sh" dark
-  grep -qx "dconf write /org/gnome/shell/extensions/search-light/background-color (0.141, 0.141, 0.141, 0.85)" "$CALLS"
+  grep -qx "dconf write /org/gnome/shell/extensions/search-light/background-color (0.141, 0.141, 0.141, 0.5)" "$CALLS"
   run "$RT/tahoe-mode.sh" light
-  grep -qx "dconf write /org/gnome/shell/extensions/search-light/background-color (0.961, 0.961, 0.961, 0.85)" "$CALLS"
+  grep -qx "dconf write /org/gnome/shell/extensions/search-light/background-color (0.961, 0.961, 0.961, 0.5)" "$CALLS"
 }
