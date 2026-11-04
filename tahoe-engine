@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+REPO_DIR=$(cd "$(dirname "$0")" && pwd)
+source "$REPO_DIR/lib/common.sh"
+for f in "$REPO_DIR"/lib/steps/*.sh; do source "$f"; done
+source "$REPO_DIR/lib/modules.sh"
+source "$REPO_DIR/lib/engine.sh"
+
+case ${1:-} in
+  status) engine_status ;;
+  apply) shift; engine_apply "$@" ;;
+  *) log "Usage: $(basename "$0") status | apply [--variant V] [--bg-light P] [--bg-dark P] [--logo P] module=on|off ..."; exit 2 ;;
+esac

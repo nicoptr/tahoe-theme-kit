@@ -6,6 +6,15 @@ log() { printf '%s\n' "$*" >&2; }
 warn() { printf 'WARNING: %s\n' "$*" >&2; }
 die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 
+# the app has no terminal: it hands sudo the password through SUDO_ASKPASS
+sudo() {
+  if [[ -n ${SUDO_ASKPASS:-} ]]; then
+    command sudo -A "$@"
+  else
+    command sudo "$@"
+  fi
+}
+
 ask_yes_no() {
   local prompt=$1 default=$2 hint answer
   [[ $default == y ]] && hint='[Y/n]' || hint='[y/N]'
