@@ -41,7 +41,6 @@ step_extensions() {
   if $wobbly; then
     patch -d "$HOME/.local/share/gnome-shell/extensions" -p0 -i "$REPO_DIR/patches/compiz-windows-effect-rwc-shadow.patch"
   fi
-  patch -d "$HOME/.local/share/gnome-shell/extensions" -p0 -i "$REPO_DIR/patches/search-light-panel-look.patch"
   enable_extensions "${uuids[@]}"
 
   for p in "${EXTENSION_SETTINGS[@]}"; do

@@ -192,14 +192,13 @@ BLUR_PIPELINE="'$([[ $MODE == Dark ]] && echo pipeline_default || echo pipeline_
 dconf write /org/gnome/shell/extensions/blur-my-shell/popup/pipeline "$BLUR_PIPELINE"
 dconf write /org/gnome/shell/extensions/blur-my-shell/panel/pipeline "$BLUR_PIPELINE"
 
-# Search Light tints its blurred wallpaper with background-color: 40% black = the panel's 0.6 brightness
 SEARCH_LIGHT=/org/gnome/shell/extensions/search-light
 if [[ $MODE == Dark ]]; then
   dconf write $SEARCH_LIGHT/text-color '(0.871, 0.871, 0.871, 1.0)'
-  dconf write $SEARCH_LIGHT/background-color '(0.0, 0.0, 0.0, 0.4)'
+  dconf write $SEARCH_LIGHT/background-color '(0.141, 0.141, 0.141, 1.0)'
 else
   dconf write $SEARCH_LIGHT/text-color '(0.141, 0.141, 0.141, 1.0)'
-  dconf write $SEARCH_LIGHT/background-color '(0.0, 0.0, 0.0, 0.0)'
+  dconf write $SEARCH_LIGHT/background-color '(0.961, 0.961, 0.961, 1.0)'
 fi
 
 gtk4_reloads_user_css() {
