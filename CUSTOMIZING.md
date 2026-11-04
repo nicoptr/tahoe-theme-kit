@@ -9,18 +9,30 @@ This file is for people and coding agents who want to change the kit: add a vari
 | `install.sh` | parses the variant, then runs the steps in `STEPS` order |
 | `lib/common.sh` | `log`, `warn`, `die`, `ask_yes_no`, `ask_image`, `load_variant`, `render` |
 | `lib/steps/NN-*.sh` | one `step_<name>` function per installer step |
+| `lib/modules.sh` | `MODULES` (apply order) and `mod_<id>_install`, `mod_<id>_remove`, `mod_<id>_status` per module, built on the steps |
+| `lib/engine.sh`, `tahoe-engine` | non-interactive `status` (JSON) and `apply` (`@@start/@@ok/@@fail` lines) used by the app |
+| `app/` | the GTK4/libadwaita app (`tahoe_kit.py`), its pure logic (`logic.py`), `modules.json` (titles, notes, previews), `askpass.py` |
+| `app/previews/` | preview images, drawn by `make_previews.py` (run it with `env -u GDK_PIXBUF_MODULE_FILE` from Ghostty) |
 | `variants/<name>.conf` | variant data (see below) |
 | `runtime/` | copied to `~/.local/share/tahoe-theme-kit/`. Switchcraft runs `tahoe-mode.sh` from there, so the clone can be deleted |
 | `shell/` | CSS appended to the MacTahoe shell themes. `@ACCENT_HEX@` is replaced |
 | `files/` | copied into `~` through `render` (tokens `@ACCENT@ @ACCENT_HEX@ @ICON_THEME@ @HOME@ @RUNTIME@`) |
 | `ghostty/` | Ghostty config, title bar CSS, theme generator |
 | `dconf/` | extension settings, loaded after a reset |
-| `patches/` | Compiz windows effect patch |
+| `patches/` | Compiz windows effect and Search Light patches |
 | `gtk4-live-css/` | GTK4 patch and `build.sh` |
 | `upstream.lock` | pinned MacTahoe commits |
 | `tests/` | bats tests. `tests/stubs/` stands in for sudo, apt, gsettings and friends |
 
-On the user's machine, `~/.local/share/tahoe-theme-kit/tahoe.conf` is the variant plus `BG_LIGHT`, `BG_DARK` and `PLYMOUTH_LOGO` as absolute paths.
+On the user's machine, `~/.local/share/tahoe-theme-kit/tahoe.conf` is the variant plus `VARIANT`, `BG_LIGHT`, `BG_DARK` and `PLYMOUTH_LOGO` as absolute paths. It is the only state: each module's status is read from the system, so installs from before the app work too.
+
+## Add a module
+
+1. Add its id to `MODULES` in `lib/modules.sh`, where it should run in the apply order.
+2. Write `mod_<id>_status` (prints `on`, `off` or `unavailable`), `mod_<id>_install` and `mod_<id>_remove`. Remove puts Ubuntu's default back and restores `*.bak-tahoe` copies with `restore_or_delete`. Never remove base packages.
+3. A remove that touches boot, login or every app checks the restore path first and returns `$REFUSED` before changing anything if it is missing, then checks the result and `die`s if it is wrong. The engine rolls a failed module back by running the opposite action.
+4. If it reads the variant or the images, add it to `VARIANT_MODULES`.
+5. Add its entry to `app/modules.json` (same order) and a preview in `make_previews.py`. `tests/test_app.py` checks that the two lists match.
 
 ## Add a variant
 

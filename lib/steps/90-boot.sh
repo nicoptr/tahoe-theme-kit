@@ -49,8 +49,10 @@ step_nvidia() {
 
 step_finish() {
   "$RUNTIME/tahoe-mode.sh" dark
+  "$REPO_DIR/tahoe-kit" --install-desktop-file
   log ""
-  log "Done. Left to do by hand:"
+  log "Done. To change modules later, open Tahoe Kit from the app grid (or run ./tahoe-kit)."
+  log "Left to do by hand:"
   log "  1. Log out and back in (X11: pick 'Ubuntu on Xorg'), so the extensions start."
   log "  2. Open Switchcraft → Preferences → turn on Monitoring. This makes the Dark Style button run tahoe-mode.sh."
   log "  3. Set your apps to follow the system theme (README → Apps)."

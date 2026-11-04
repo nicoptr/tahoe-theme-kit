@@ -19,7 +19,7 @@ To make your own, see [CUSTOMIZING.md](CUSTOMIZING.md).
 
 ## Install
 
-Requirements: **Ubuntu 24.04 LTS** (GNOME 46). An **X11** session: pick "Ubuntu on Xorg" on the login screen. On Wayland the installer warns and asks before going on; Nautilus window restore and some extensions may misbehave there.
+Requirements: **Ubuntu 24.04 LTS** (GNOME 46), on X11 or Wayland. On Wayland the wobbly windows shadow can stay behind as a square while you drag; everything else works the same.
 
 ```sh
 git clone https://github.com/nicoptr/tahoe-theme-kit.git
@@ -34,19 +34,36 @@ When it ends:
 2. Open **Switchcraft → Preferences → Monitoring** and turn it on. From then on the Dark Style button runs the switch.
 3. Set your apps to follow the system ([below](#apps)).
 
+## The app
+
+`./tahoe-kit` (or **Tahoe Kit** in the app grid, after the first install) shows every module with a preview. Pick the variant and the images, turn modules on and off, choose the launcher, then **Apply**: it lists what will be installed and removed, asks for your password once, and shows the log.
+
+![Tahoe Kit](docs/screenshots/app.png)
+
+Turning a module off uninstalls it and puts that part of the system back to **Ubuntu's defaults**: the dock goes back to Ubuntu's, GNOME Terminal is the default again, Yaru comes back, and so on. A config file the kit replaced gets your `*.bak-tahoe` copy back. Settings you changed by hand *before* the kit are not remembered: you get Ubuntu's, not yours. The shared tools the kit needs (`git`, `jq`, `imagemagick`…) are never removed.
+
+The modules that touch the system (GTK4, the login screen, the boot splash) check that Ubuntu's version is there before removing the kit's, and check the result afterwards. If a module fails, the app stops, puts that module back as it was, and leaves the ones before it done.
+
+The app needs nothing new: Python, GTK4 and libadwaita come with Ubuntu. Underneath it runs `./tahoe-engine`, which you can also use from a script:
+
+```sh
+./tahoe-engine status                                  # JSON: variant, images, each module
+./tahoe-engine apply --variant topaz dock=off launcher=ulauncher
+```
+
 ## What it does
 
-| Step | What changes | How to undo |
+| Step | What changes | How to undo (or turn it off in the app) |
 |---|---|---|
 | packages | `git sassc libglib2.0-dev-bin jq wmctrl x11-utils imagemagick curl python3-nautilus` | `apt remove` |
 | upstream | MacTahoe gtk + icon repos, at pinned commits, in `~/.cache/tahoe-theme-kit` | delete the folder |
 | assets | asks for the light wallpaper, the dark wallpaper (defaults: MacTahoe's, recolored to the variant) and the boot logo, then writes `~/.local/share/tahoe-theme-kit/tahoe.conf` | delete the folder |
 | theme | MacTahoe GTK + shell theme (`-l -HD --shell -p 45 -h smaller --round`) plus the kit's shell fixes | `MacTahoe-gtk-theme/install.sh -r` |
 | icons | MacTahoe icons and cursors | `MacTahoe-icon-theme/install.sh -r` |
-| extensions | User Themes, Blur my Shell, Rounded Window Corners Reborn, Hide Top Bar, Dash to Dock (floating, bottom), Coverflow Alt-Tab, Search Light (Spotlight-style search, Super+Space; the keyboard layout switch moves to the keyboard key); optional wobbly windows (Compiz windows effect, patched) | Extension Manager |
+| extensions | User Themes, Blur my Shell, Rounded Window Corners Reborn, Hide Top Bar, Dash to Dock (floating, bottom), Coverflow Alt-Tab; optional wobbly windows (Compiz windows effect, patched) | the app, one module each |
 | settings | wallpapers, cursor, terminal follows the system, thin terminal scrollbar, Switchcraft commands | GNOME Settings |
 | switchcraft | [Switchcraft](https://github.com/kem-a/switchcraft) 1.2.1, which watches the Dark Style button | `apt remove switchcraft` |
-| ulauncher | [Ulauncher](https://ulauncher.io) 5.16.2, opens with Ctrl+Super, starts at login | `apt remove ulauncher` |
+| launcher | Super+Space opens [Search Light](https://github.com/icedman/search-light) (default) or [Ulauncher](https://ulauncher.io) 5.16.2, chosen in the app; the keyboard layout switch moves to the keyboard key | the app: Launcher → None |
 | gtk4 | patched GTK4 that reloads its CSS live, held with `apt-mark` | see [GTK4](#gtk4) |
 | ghostty | [Ghostty](https://ghostty.org) as the default terminal, with a Tahoe title bar and colors from the variant. Nautilus gets "Open in Ghostty" in place of GNOME Terminal's "Open in Terminal" | `snap remove ghostty`, `apt install nautilus-extension-gnome-terminal` |
 | gdm | login screen in the dark variant, with your dark wallpaper blurred | `sudo ~/.cache/tahoe-theme-kit/MacTahoe-gtk-theme/tweaks.sh -g -r` |

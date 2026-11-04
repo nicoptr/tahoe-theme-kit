@@ -70,3 +70,12 @@ setup_boot() {
   [[ "$output" == *Monitoring* ]]
   [[ "$output" == *"Log out"* ]]
 }
+
+@test "finish: installs the Tahoe Kit app launcher" {
+  load_lib
+  mkdir -p "$RUNTIME"
+  printf '#!/usr/bin/env bash\n' >"$RUNTIME/tahoe-mode.sh" && chmod +x "$RUNTIME/tahoe-mode.sh"
+  run step_finish
+  [ "$status" -eq 0 ]
+  grep -qx "Exec=$REPO_DIR/tahoe-kit" "$HOME/.local/share/applications/io.github.nicoptr.TahoeKit.desktop"
+}

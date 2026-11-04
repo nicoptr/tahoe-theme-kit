@@ -5,7 +5,7 @@ setup() {
   export PATH=$REPO_DIR/tests/stubs:$PATH OS_RELEASE=$BATS_TEST_TMPDIR/os-release
   mkdir -p "$HOME" && : >"$CALLS"
   printf 'ID=ubuntu\nVERSION_ID="24.04"\n' >"$OS_RELEASE"
-  unset XDG_SESSION_TYPE TAHOE_YES SUDO_ASKPASS
+  unset XDG_SESSION_TYPE TAHOE_YES SUDO_ASKPASS XDG_DATA_HOME XDG_CONFIG_HOME
   export YARU_GRESOURCE=$BATS_TEST_TMPDIR/yaru/gnome-shell-theme.gresource PLYMOUTH_THEMES=$BATS_TEST_TMPDIR/plymouth
 }
 
