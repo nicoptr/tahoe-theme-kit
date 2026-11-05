@@ -285,7 +285,7 @@ mod_gtk4_remove() {
 
 mod_gdm_remove() {
   if [[ -x $CACHE/MacTahoe-gtk-theme/tweaks.sh ]]; then
-    (cd "$CACHE/MacTahoe-gtk-theme" && sudo ./tweaks.sh -g -r)
+    (cd "$CACHE/MacTahoe-gtk-theme" && sudo ./tweaks.sh -g -r) || true
   else
     sudo mv -f "$YARU_GRESOURCE.bak" "$YARU_GRESOURCE"
   fi

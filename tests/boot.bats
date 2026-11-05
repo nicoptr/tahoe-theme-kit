@@ -11,6 +11,7 @@ setup_boot() {
 
 @test "gdm: blurred background made here, tweaks.sh without -c, then the Yaru alternative" {
   setup_boot
+  mkdir -p "$(dirname "$YARU_GRESOURCE")" && touch "$YARU_GRESOURCE.bak"
   run step_gdm <<<"y"
   [ "$status" -eq 0 ]
   identify "$CACHE/gdm-background.png"

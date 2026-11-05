@@ -9,7 +9,9 @@ step_gdm() {
   local bg=$CACHE/gdm-background.png
   convert "$BG_DARK" -scale 1280x -blur 0x50 -fill black -colorize 45% "$bg"
   # no -c: tweaks.sh reads colors[1], which is empty when a single color is passed
-  (cd "$CACHE/MacTahoe-gtk-theme" && sudo ./tweaks.sh -g -b "$bg" -nb -nd -p 45 -h smaller -t "$ACCENT")
+  # its exit code lies: 1 under sudo without a terminal even after "Done!", so check the backup it makes
+  (cd "$CACHE/MacTahoe-gtk-theme" && sudo ./tweaks.sh -g -b "$bg" -nb -nd -p 45 -h smaller -t "$ACCENT") || true
+  [[ -e $YARU_GRESOURCE.bak ]] || die "The login screen theme was not installed."
   # Ubuntu's GDM reads this alternative, which may still point to an old custom theme
   sudo update-alternatives --set gdm-theme.gresource "$YARU_GRESOURCE"
 }

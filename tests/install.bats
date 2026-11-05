@@ -16,6 +16,7 @@ fake_script() {
   fake_script "$icons/cursors/install.sh"
   printf '[Desktop Entry]\nIcon=x\n' >"$BATS_TEST_TMPDIR/ghostty.desktop"
   cp /etc/skel/.bashrc "$HOME/"
+  mkdir -p "$(dirname "$YARU_GRESOURCE")" && touch "$YARU_GRESOURCE.bak"
 
   TAHOE_YES=1 PLYMOUTH_DEFAULT=$BATS_TEST_TMPDIR/ubuntu-logo.png SNAP_DESKTOP=$BATS_TEST_TMPDIR/ghostty.desktop \
     STUB_OUT_DPKG_QUERY=4.14.5+ds-0ubuntu0.10+livecss1 STUB_OUT_GSETTINGS='@as []' \

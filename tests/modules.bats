@@ -240,6 +240,40 @@ libgtk-4-1 | 4.14.2+ds-1ubuntu1 | http://archive.ubuntu.com/ubuntu noble/main am
   [ "$status" -ne 0 ]
 }
 
+# MacTahoe's tweaks.sh exits 1 under sudo without a terminal even after "Done!"
+@test "gdm remove: tweaks.sh exits 1 but the backup is back → success" {
+  setup_mod
+  real_sudo
+  mkdir -p "$(dirname "$YARU_GRESOURCE")"
+  echo mactahoe >"$YARU_GRESOURCE" && echo yaru >"$YARU_GRESOURCE.bak"
+  fake_script "$CACHE/MacTahoe-gtk-theme/tweaks.sh" "mv -f '$YARU_GRESOURCE.bak' '$YARU_GRESOURCE'; exit 1"
+  run_strict mod_gdm_remove
+  [ "$STRICT_RC" -eq 0 ]
+}
+
+setup_gdm_install() {
+  setup_mod
+  real_sudo
+  mkdir -p "$RUNTIME" "$(dirname "$YARU_GRESOURCE")"
+  echo yaru >"$YARU_GRESOURCE"
+  convert -size 4x4 xc:navy "$BATS_TEST_TMPDIR/dark.jpg"
+  { cat "$REPO_DIR/variants/amethyst.conf"; printf 'BG_DARK=%q\n' "$BATS_TEST_TMPDIR/dark.jpg"; } >"$RUNTIME/tahoe.conf"
+}
+
+@test "gdm install: tweaks.sh exits 1 but the theme is in → success" {
+  setup_gdm_install
+  fake_script "$CACHE/MacTahoe-gtk-theme/tweaks.sh" "cp '$YARU_GRESOURCE' '$YARU_GRESOURCE.bak'; exit 1"
+  run_strict mod_gdm_install
+  [ "$STRICT_RC" -eq 0 ]
+}
+
+@test "gdm install: no backup afterwards → fails" {
+  setup_gdm_install
+  fake_script "$CACHE/MacTahoe-gtk-theme/tweaks.sh" "exit 0"
+  run mod_gdm_install
+  [ "$status" -ne 0 ]
+}
+
 setup_plymouth() {
   mkdir -p "$PLYMOUTH_THEMES/bgrt" "$PLYMOUTH_THEMES/tahoe-logo"
   touch "$PLYMOUTH_THEMES/bgrt/bgrt.plymouth" "$PLYMOUTH_THEMES/tahoe-logo/tahoe-logo.plymouth"
