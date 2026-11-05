@@ -166,3 +166,11 @@ assert (s["variant"], s["bg_light"], s["bg_dark"], s["logo"]) == ("topaz", "/a.p
   [ "$status" -eq 0 ]
   grep -qx 'install accent yellow' "$CALLS"
 }
+
+@test "engine: modules get a TERM when the app runs without a terminal" {
+  setup_engine
+  unset TERM
+  mod_dock_install() { echo "term ${TERM:-missing}" >>"$CALLS"; }
+  run engine_apply --variant amethyst dock=on
+  grep -qx 'term dumb' "$CALLS"
+}

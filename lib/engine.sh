@@ -101,6 +101,8 @@ engine_prepare() {
 engine_apply() {
   local variant='' images=false arg id cur
   local -A want=() current=()
+  # MacTahoe runs setterm under set -e: without a terminal (app started from the menu) it fails
+  export TERM=${TERM:-dumb}
   while (($#)); do
     case $1 in
       --variant) variant=$2; shift 2 ;;
