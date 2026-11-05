@@ -118,7 +118,7 @@ engine_apply() {
       *) log "Usage: tahoe-engine apply [--variant V] [--bg-light P] [--bg-dark P] [--logo P] module=on|off ..."; return 2 ;;
     esac
   done
-  [[ ${want[theme]:-} == off ]] && want[switch]=off
+  [[ ${want[theme]:-} == off || ${want[gtk4]:-} == off ]] && want[switch]=off
 
   local before
   before=$(current_variant)

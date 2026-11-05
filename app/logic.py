@@ -10,7 +10,7 @@ ENGINE = os.path.join(REPO_DIR, "tahoe-engine")
 APPLY_LOG = os.path.join(os.path.expanduser("~"), ".local", "share", "tahoe-theme-kit", "last-apply.log")
 IMAGE_FLAGS = {"bg_light": "--bg-light", "bg_dark": "--bg-dark", "logo": "--logo"}
 # keep in sync with engine_apply in lib/engine.sh
-IMPLIED_OFF = {"theme": ["switch"]}
+IMPLIED_OFF = {"theme": ["switch"], "gtk4": ["switch"]}
 
 
 def load_modules():

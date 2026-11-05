@@ -17,6 +17,11 @@ class PlanTest(unittest.TestCase):
         wanted = dict(CURRENT, theme="off")
         self.assertEqual(sorted(logic.plan(CURRENT, wanted)), [("switch", "remove"), ("theme", "remove")])
 
+    def test_gtk4_off_takes_the_switch_with_it(self):
+        current = dict(CURRENT, gtk4="on")
+        wanted = dict(current, gtk4="off")
+        self.assertEqual(sorted(logic.plan(current, wanted)), [("gtk4", "remove"), ("switch", "remove")])
+
     def test_launcher_choice(self):
         wanted = dict(CURRENT, launcher="ulauncher")
         self.assertEqual(logic.plan(CURRENT, wanted), [("launcher", "ulauncher")])
@@ -122,6 +127,12 @@ class WindowSmokeTest(unittest.TestCase):
         self.assertFalse(win.controls["gtk4"].get_sensitive())
         win.controls["switch"].set_active(True)
         self.assertEqual(win.wanted["theme"], "on")
+        modules.update(gtk4="off")
+        win2 = tahoe_kit.KitWindow(app)
+        win2.controls["switch"].set_active(False)
+        win2.controls["switch"].set_active(True)
+        self.assertEqual(win2.wanted["gtk4"], "on")
+        win2.destroy()
         tahoe_kit.sudo_password_ok = lambda _pw: False
         win._check_password_and_run("x")
         self.assertTrue(win.running)

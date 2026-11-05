@@ -273,7 +273,7 @@ class KitWindow(Adw.ApplicationWindow):
             box.append(note(m.get("unavailable_note", "Not available on this computer."), "warning"))
             return
         if m.get("requires"):
-            names = ", ".join(self.meta[r]["title"] for r in m["requires"])
+            names = ", ".join(self.meta[r]["title"] for r in m["requires"] if self.current.get(r) != "unavailable")
             box.append(note(f"Needs: {names}. Turning that off turns this off too."))
         if m.get("risky"):
             box.append(note("This one changes system files. The kit checks the result and puts things back if a step fails.", "warning"))
@@ -298,7 +298,8 @@ class KitWindow(Adw.ApplicationWindow):
                 self.wanted[other] = "off"
             if other == module_id and self.wanted[module_id] == "on":
                 for r in m.get("requires", []):
-                    self.wanted[r] = "on"
+                    if self.current.get(r) != "unavailable":
+                        self.wanted[r] = "on"
         self._refresh()
 
     def _on_choice(self, row, _pspec, m):

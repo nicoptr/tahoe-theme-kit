@@ -23,3 +23,5 @@ shell-integration-features = no-cursor,sudo,title,ssh-env
 mouse-hide-while-typing = true
 
 bell-features = attention,title
+# the light/dark switch reloads the config: no toast each time
+app-notifications = no-config-reload

@@ -184,3 +184,12 @@ assert (s["variant"], s["bg_light"], s["bg_dark"], s["logo"]) == ("topaz", "/a.p
   set -e
   grep -qF "Failed: test -e /nonexistent (exit 1)" "$BATS_TEST_TMPDIR/out"
 }
+
+@test "engine: GTK4 off also turns the switch off" {
+  setup_engine
+  echo on >"$FAKE_STATE/gtk4"
+  echo on >"$FAKE_STATE/switch"
+  run engine_apply gtk4=off
+  [ "$status" -eq 0 ]
+  [ "$(grep -E '^remove' "$CALLS" | paste -sd,)" = "remove gtk4,remove switch" ]
+}
