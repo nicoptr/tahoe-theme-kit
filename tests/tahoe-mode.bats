@@ -67,3 +67,9 @@ setup_runtime() {
   [ "$status" -eq 0 ]
   refute grep -q "gtk-theme" "$CALLS"
 }
+
+@test "Ghostty reloads its config when the gtk4 css changes (its snap GTK has no live css)" {
+  setup_runtime
+  run "$RT/tahoe-mode.sh" dark
+  grep -qx 'pkill -USR2 -x ghostty' "$CALLS"
+}

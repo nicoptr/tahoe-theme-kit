@@ -207,6 +207,9 @@ gtk4_reloads_user_css() {
   [[ "$(dpkg-query -W -f='${Version}' libgtk-4-1 2>/dev/null)" == *+livecss* ]]
 }
 
+# Ghostty's snap ships its own GTK without live css; SIGUSR2 reloads its config and gtk-custom-css
+$gtk4_changed && { pkill -USR2 -x ghostty || true; }
+
 if $gtk4_changed && ! gtk4_reloads_user_css; then
   restart_nautilus
 fi
