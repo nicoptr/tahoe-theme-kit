@@ -101,8 +101,9 @@ engine_prepare() {
 engine_apply() {
   local variant='' images=false arg id cur
   local -A want=() current=()
-  # MacTahoe runs setterm under set -e: without a terminal (app started from the menu) it fails
-  export TERM=${TERM:-dumb}
+  # MacTahoe runs setterm under set -e: it fails without a TERM, or with xterm-ghostty once Ghostty's
+  # snap (and its terminfo) is removed; the output goes to a log anyway
+  export TERM=dumb
   while (($#)); do
     case $1 in
       --variant) variant=$2; shift 2 ;;

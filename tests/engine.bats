@@ -167,9 +167,9 @@ assert (s["variant"], s["bg_light"], s["bg_dark"], s["logo"]) == ("topaz", "/a.p
   grep -qx 'install accent yellow' "$CALLS"
 }
 
-@test "engine: modules get a TERM when the app runs without a terminal" {
+@test "engine: modules get a TERM that outlives Ghostty's terminfo" {
   setup_engine
-  unset TERM
+  export TERM=xterm-ghostty
   mod_dock_install() { echo "term ${TERM:-missing}" >>"$CALLS"; }
   run engine_apply --variant amethyst dock=on
   grep -qx 'term dumb' "$CALLS"
