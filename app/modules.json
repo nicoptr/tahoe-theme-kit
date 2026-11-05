@@ -31,7 +31,7 @@
   {"id": "switch", "title": "Light/dark switch", "kind": "toggle", "preview": ["switch-1.png", "switch-2.png"],
    "description": "Switchcraft watches the Dark Style button and switches theme, icons, terminal colors and launcher with it.",
    "requires": ["theme", "gtk4"],
-   "after_note": "After installing: open Switchcraft → Preferences → Monitoring and turn it on.",
+   "after_note": "Open Switchcraft → Preferences and turn Monitoring on. If it is already on, turn it off and on again: until then the Dark Style button does not switch the theme.",
    "off_note": "The Dark Style button only changes what GNOME changes by itself."},
   {"id": "gtk4", "title": "GTK4 live switch", "kind": "toggle", "preview": ["gtk4.png"], "risky": true,
    "description": "Patched GTK4 that reloads its CSS, so open apps (Files too) switch light/dark without restarting. Held with apt-mark: GTK4 updates stop until you turn this off.",

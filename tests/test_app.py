@@ -42,6 +42,16 @@ class ApplyArgsTest(unittest.TestCase):
         self.assertEqual(args, ["apply", "switch=off", "theme=off"])
 
 
+class NextStepsTest(unittest.TestCase):
+    def test_installed_modules_add_their_steps_after_logging_out(self):
+        meta = {"switch": {"after_note": "Turn Monitoring on."}, "dock": {}}
+        self.assertEqual(logic.next_steps(["dock", "switch"], meta),
+                         ["Turn Monitoring on.", "Log out and back in so GNOME loads every change."])
+
+    def test_nothing_installed_only_logout(self):
+        self.assertEqual(logic.next_steps([], {}), ["Log out and back in so GNOME loads every change."])
+
+
 class ProgressTest(unittest.TestCase):
     def test_parse(self):
         self.assertEqual(logic.parse_progress("@@start dock install"), ("start", "dock", "install"))

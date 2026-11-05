@@ -498,14 +498,20 @@ class KitWindow(Adw.ApplicationWindow):
         self.running = False
         self.close_button.set_sensitive(True)
         message = logic.result_message(ok, self.events, lambda m: self.meta.get(m, {}).get("title", m))
+        self.progress_label.set_label(message)
         if ok:
             self.progress.set_fraction(1)
             installed = [m for m, a in logic.plan(self.current, self.wanted) if a == "install"]
-            message += "".join("\n" + self.meta[m]["after_note"] for m in installed if self.meta[m].get("after_note"))
-        self.progress_label.set_label(message)
+            self._show_next_steps(logic.next_steps(installed, self.meta))
         self.images = {}
         self._load_status()
         self._refresh()
+
+    def _show_next_steps(self, steps):
+        body = "\n\n".join(f"{i}. {step}" for i, step in enumerate(steps, 1))
+        dialog = Adw.AlertDialog(heading="Next steps", body=body)
+        dialog.add_response("ok", "Got it")
+        dialog.present(self)
 
 
 def install_desktop_file():

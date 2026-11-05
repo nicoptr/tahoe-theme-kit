@@ -77,10 +77,17 @@ def engine_argv(args):
     return ["setsid", ENGINE] + args
 
 
+LOGOUT_STEP = "Log out and back in so GNOME loads every change."
+
+
+def next_steps(installed, meta):
+    return [meta[m]["after_note"] for m in installed if meta.get(m, {}).get("after_note")] + [LOGOUT_STEP]
+
+
 def result_message(ok, events, title=lambda m: m):
     """events: (kind, module) pairs from parse_progress, in order."""
     if ok:
-        return "Done. Log out and back in so GNOME loads every change."
+        return "Done."
     kinds = {kind: module for kind, module in events}
     if "rollback-failed" in kinds:
         return (f"Stopped at {title(kinds['rollback-failed'])}, and putting it back failed too: "

@@ -31,7 +31,7 @@ Run it as your normal user. It asks for your sudo password once. Every other que
 
 When it ends:
 1. Log out and back in.
-2. Open **Switchcraft → Preferences → Monitoring** and turn it on. From then on the Dark Style button runs the switch.
+2. Open **Switchcraft → Preferences → Monitoring** and turn it on (if it is already on, turn it off and on again). From then on the Dark Style button runs the switch.
 3. Set your apps to follow the system ([below](#apps)).
 
 ## The app

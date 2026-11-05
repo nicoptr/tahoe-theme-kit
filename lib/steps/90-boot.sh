@@ -56,7 +56,7 @@ step_finish() {
   log "Done. To change modules later, open Tahoe Kit from the app grid (or run ./tahoe-kit)."
   log "Left to do by hand:"
   log "  1. Log out and back in (X11: pick 'Ubuntu on Xorg'), so the extensions start."
-  log "  2. Open Switchcraft → Preferences → turn on Monitoring. This makes the Dark Style button run tahoe-mode.sh."
+  log "  2. Open Switchcraft → Preferences → turn on Monitoring (already on? turn it off and on again). This makes the Dark Style button run tahoe-mode.sh."
   log "  3. Set your apps to follow the system theme (README → Apps)."
   log "  4. Press Dark Style a few times and check: theme, icons, wallpaper, Ghostty, Nautilus, panel, quick settings."
   log "  5. Reboot once to see the login screen and the boot splash."
