@@ -174,3 +174,13 @@ assert (s["variant"], s["bg_light"], s["bg_dark"], s["logo"]) == ("topaz", "/a.p
   run engine_apply --variant amethyst dock=on
   grep -qx 'term dumb' "$CALLS"
 }
+
+@test "engine: the log names the command that failed" {
+  setup_engine
+  mod_corners_install() { true; test -e /nonexistent; true; }
+  # not `run`: it calls the command where errexit is ignored, like `||`
+  set +e
+  engine_apply --variant amethyst corners=on >"$BATS_TEST_TMPDIR/out"
+  set -e
+  grep -qF "Failed: test -e /nonexistent (exit 1)" "$BATS_TEST_TMPDIR/out"
+}

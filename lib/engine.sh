@@ -51,7 +51,7 @@ run_strict() {
   local had_e=false
   [[ $- == *e* ]] && had_e=true
   set +e
-  (set -e; "$@")
+  (set -eE; trap 'echo "Failed: $BASH_COMMAND (exit $?)"; trap - ERR' ERR; "$@")
   STRICT_RC=$?
   $had_e && set -e
   return 0
