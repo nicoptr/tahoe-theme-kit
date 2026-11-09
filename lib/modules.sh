@@ -143,9 +143,16 @@ mod_wobbly_install() {
 }
 mod_wobbly_remove() { drop_extension compiz-windows-effect@hermes83.github.com; }
 
+# a custom shortcut on Super+Space (an old hand-made Ulauncher one, say) wins over the launcher's
 free_super_space() {
   gsettings set "$KEYBINDINGS" switch-input-source "['XF86Keyboard']"
   gsettings set "$KEYBINDINGS" switch-input-source-backward "['<Shift>XF86Keyboard']"
+  local path
+  for path in $(dconf read /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings | tr -d "[],'"); do
+    [[ ${path%/} != "$LAUNCHER_KEYBINDING" && $(dconf read "${path}binding") == "'<Super>space'" ]] || continue
+    log "Super+Space taken from the shortcut $(dconf read "${path}name")"
+    dconf write "${path}binding" "''"
+  done
 }
 
 install_search_light() {

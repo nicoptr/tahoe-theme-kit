@@ -47,7 +47,7 @@
    "description": "Your logo while the computer boots, with a progress bar in the accent color. Pick the logo on the Images page.",
    "off_note": "Ubuntu's boot splash comes back."},
   {"id": "nvidia", "title": "NVIDIA fix", "kind": "toggle", "preview": ["nvidia.png"],
-   "description": "Uses GSK_RENDERER=gl for GTK4 apps. Fixes near-white button borders on some NVIDIA cards.",
+   "description": "Uses GSK_RENDERER=gl for GTK4 apps. Fixes near-white button borders on some NVIDIA cards, and missing text and buttons on older ones (GT 710).",
    "unavailable_note": "No NVIDIA card in this computer.",
    "off_note": "GTK4 apps use their default renderer."}
 ]

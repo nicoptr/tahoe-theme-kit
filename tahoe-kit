@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 # the Ghostty snap leaks its own gdk-pixbuf loaders into every child: they crash the system GTK
 unset GDK_PIXBUF_MODULE_FILE
+# and it drops GSK_RENDERER: on old NVIDIA cards GTK's default renderer then loses text and buttons
+if [[ ! -v GSK_RENDERER ]] && gsk=$(systemctl --user show-environment 2>/dev/null | grep -m1 '^GSK_RENDERER='); then
+  export "$gsk"
+fi
 exec python3 -I "$(dirname "$(readlink -f "$0")")/app/tahoe_kit.py" "$@"

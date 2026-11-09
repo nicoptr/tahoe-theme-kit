@@ -117,7 +117,8 @@ These don't follow the system and have to be switched by hand: Brave, Firefox, T
 - **Wobbly windows:** without the patch, the Rounded Window Corners shadow stays still and square while the window wobbles. `patches/compiz-windows-effect-rwc-shadow.patch` warps the shadow with the window's own model. It also sets `version` to 9999 in `metadata.json`, so GNOME doesn't auto-update the extension and drop the patch.
 
 ### NVIDIA
-- **Near-white button borders in GTK4 apps:** the `ngl` renderer draws inset shadows wrong. Seen on an RTX 3070 Ti with driver 580, not on a GT 710 with driver 470. Fixed with `GSK_RENDERER=gl`.
+- **Near-white button borders in GTK4 apps:** the `ngl` renderer draws inset shadows wrong. Seen on an RTX 3070 Ti with driver 580. On a GT 710 with driver 470 it's worse: labels, the header bar and whole buttons are not drawn at all. Fixed with `GSK_RENDERER=gl`.
+- **Apps started from Ghostty ignore `GSK_RENDERER`:** Ghostty removes it from its children. `./tahoe-kit` takes it back from the session; other GTK4 apps started from the terminal still use `ngl`.
 - **The GPU isn't used:** check that `nvidia-smi` works and that Xorg loads `nvidia_drv`, not llvmpipe. The case we saw: the DKMS module wasn't built for the running kernel. The fix was `apt full-upgrade` plus the precompiled `linux-modules-nvidia-<ver>-open-generic`.
 - **Boot splash late or low resolution:** NVIDIA KMS is missing at boot (`nvidia-drm.modeset=1`).
 

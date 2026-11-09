@@ -169,6 +169,21 @@ fake_script() {
   grep -qx "shortcut-search=\\['<Super>space'\\]" "$REPO_DIR/dconf/search-light.dconf"
 }
 
+@test "launcher: another Super+Space shortcut loses its key, the kit's own keeps it" {
+  setup_mod
+  dconf() {
+    echo "dconf $*" >>"$CALLS"
+    case "$*" in
+      "read /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings") echo "['/old/custom0/', '$LAUNCHER_KEYBINDING/']" ;;
+      "read /old/custom0/binding" | "read $LAUNCHER_KEYBINDING/binding") echo "'<Super>space'" ;;
+    esac
+  }
+  run mod_launcher_set searchlight
+  [ "$status" -eq 0 ]
+  grep -qx "dconf write /old/custom0/binding ''" "$CALLS"
+  refute grep -q "dconf write $LAUNCHER_KEYBINDING/binding ''" "$CALLS"
+}
+
 # sudo runs the command for real (all paths are under $BATS_TEST_TMPDIR); $SUDO_FAIL_ON makes one command fail
 real_sudo() {
   sudo() {
